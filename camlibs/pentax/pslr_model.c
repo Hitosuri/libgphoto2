@@ -45,46 +45,52 @@
 #include "js0n.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #include "pslr_model.h"
 #include "pslr_log.h"
 #include "pslr.h"
 
-static uint8_t lastbuf[MAX_STATUS_BUF_SIZE];
-static int first = 1;
-static char *jsontext=NULL;
-static int jsonsize;
+static struct {
+    pthread_once_t once;
+
+    char *text;
+    int size;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+} json = {PTHREAD_ONCE_INIT, NULL, 0};
 
 static int dir_exists(char *dir) {
     int res = 0;
     struct stat info;
 
-    if ( (stat(dir, &info) == 0) && (info.st_mode & S_IFDIR) ) {
+    if ( (stat(dir, &info) == 0) && S_ISDIR(info.st_mode) ) {
         res = 1;
     }
     return res;
 }
 
-static void ipslr_status_diff(uint8_t *buf) {
+static void ipslr_status_diff(pslr_status *status, uint8_t *buf) {
+#ifdef PSLR_DEBUG
     int n;
     int diffs;
-    if (first) {
+    if (status->first) {
         hexdump(buf, MAX_STATUS_BUF_SIZE);
-        memcpy(lastbuf, buf, MAX_STATUS_BUF_SIZE);
-        first = 0;
+        memcpy(status->lastbuf, buf, MAX_STATUS_BUF_SIZE);
+        status->first = 0;
     }
 
     diffs = 0;
     for (n = 0; n < MAX_STATUS_BUF_SIZE; n++) {
-        if (lastbuf[n] != buf[n]) {
-            DPRINT("\t\tbuf[%03X] last %02Xh %3d new %02Xh %3d\n", n, lastbuf[n], lastbuf[n], buf[n], buf[n]);
+        if (status->lastbuf[n] != buf[n]) {
+            DPRINT("\t\tbuf[%03X] last %02Xh %3d new %02Xh %3d\n", n, status->lastbuf[n], status->lastbuf[n], buf[n], buf[n]);
             diffs++;
         }
     }
     if (diffs) {
         DPRINT("---------------------------\n");
-        memcpy(lastbuf, buf, MAX_STATUS_BUF_SIZE);
+        memcpy(status->lastbuf, buf, MAX_STATUS_BUF_SIZE);
     }
+#endif
 }
 
 static
@@ -94,14 +100,14 @@ uint16_t get_uint16_be(const uint8_t *buf) {
     return res;
 }
 
-uint32_t get_uint32_be(uint8_t *buf) {
+uint32_t get_uint32_be(const uint8_t *buf) {
     uint32_t res;
     res = buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3];
     return res;
 }
 
 static
-int32_t get_int32_be(uint8_t *buf) {
+int32_t get_int32_be(const uint8_t *buf) {
     int32_t res;
     res = buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3];
     return res;
@@ -114,14 +120,14 @@ uint16_t get_uint16_le(const uint8_t *buf) {
     return res;
 }
 
-uint32_t get_uint32_le(uint8_t *buf) {
+uint32_t get_uint32_le(const uint8_t *buf) {
     uint32_t res;
     res = buf[3] << 24 | buf[2] << 16 | buf[1] << 8 | buf[0];
     return res;
 }
 
 static
-int32_t get_int32_le(uint8_t *buf) {
+int32_t get_int32_le(const uint8_t *buf) {
     int32_t res;
     res = buf[3] << 24 | buf[2] << 16 | buf[1] << 8 | buf[0];
     return res;
@@ -141,7 +147,7 @@ void set_uint32_be(uint32_t v, uint8_t *buf) {
     buf[3] = v;
 }
 
-char *pslr_hexdump(uint8_t *buf, uint32_t bufLen) {
+char *pslr_hexdump(const uint8_t *buf, uint32_t bufLen) {
     char *ret = malloc(4*bufLen);
     uint32_t i;
     sprintf(ret,"%s","");
@@ -163,13 +169,13 @@ char *pslr_hexdump(uint8_t *buf, uint32_t bufLen) {
     return ret;
 }
 
-void hexdump(uint8_t *buf, uint32_t bufLen) {
+void hexdump(const uint8_t *buf, uint32_t bufLen) {
     char *dmp = pslr_hexdump(buf, bufLen);
     printf("%s",dmp);
     free(dmp);
 }
 
-void hexdump_debug(uint8_t *buf, uint32_t bufLen) {
+void hexdump_debug(const uint8_t *buf, uint32_t bufLen) {
     char *dmp = pslr_hexdump(buf, bufLen);
     DPRINT("%s",dmp);
     free(dmp);
@@ -191,7 +197,7 @@ const char* int_to_binary( uint16_t x ) {
 
 
 static
-int _get_user_jpeg_stars( ipslr_model_info_t *model, int hwqual ) {
+int _get_user_jpeg_stars( const ipslr_model_info_t *model, int hwqual ) {
     if ( model->id == 0x12f71 ) {
         // K5IIs hack
         // TODO: test it
@@ -205,7 +211,7 @@ int _get_user_jpeg_stars( ipslr_model_info_t *model, int hwqual ) {
     }
 }
 
-int pslr_get_hw_jpeg_quality( ipslr_model_info_t *model, int user_jpeg_stars) {
+int pslr_get_hw_jpeg_quality( const ipslr_model_info_t *model, int user_jpeg_stars) {
     if ( model->id == 0x12f71 ) {
         // K5IIs hack
         // TODO: test it
@@ -224,7 +230,7 @@ static
 void ipslr_status_parse_k10d(ipslr_handle_t  *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
     memset(status, 0, sizeof (*status));
     status->bufmask = get_uint16_be(&buf[0x16]);
@@ -270,7 +276,7 @@ void ipslr_status_parse_k20d(ipslr_handle_t *p, pslr_status *status) {
 
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
     memset(status, 0, sizeof (*status));
     status->bufmask = get_uint16_be( &buf[0x16]);
@@ -429,7 +435,7 @@ void ipslr_status_parse_kx(ipslr_handle_t *p, pslr_status *status) {
 
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -448,7 +454,7 @@ static
 void ipslr_status_parse_kr(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -464,7 +470,7 @@ static
 void ipslr_status_parse_k5(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -483,7 +489,7 @@ static
 void ipslr_status_parse_k30(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -504,7 +510,7 @@ static
 void ipslr_status_parse_k01(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -524,7 +530,7 @@ static
 void ipslr_status_parse_k50(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -540,7 +546,7 @@ static
 void ipslr_status_parse_k500(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -559,7 +565,7 @@ static
 void ipslr_status_parse_km(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -577,7 +583,7 @@ static
 void ipslr_status_parse_k3(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -597,7 +603,7 @@ static
 void ipslr_status_parse_ks1(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -615,7 +621,7 @@ static
 void ipslr_status_parse_k1(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -659,7 +665,7 @@ static
 void ipslr_status_parse_k70(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -729,7 +735,7 @@ static
 void ipslr_status_parse_k200d(ipslr_handle_t *p, pslr_status *status) {
     uint8_t *buf = p->status_buffer;
     if ( PSLR_DEBUG_ENABLED ) {
-        ipslr_status_diff(buf);
+        ipslr_status_diff(status, buf);
     }
 
     memset(status, 0, sizeof (*status));
@@ -792,8 +798,7 @@ pslr_setting_def_t *pslr_find_setting_by_name (pslr_setting_def_t *array, int ar
     return NULL;
 }
 
-static
-char *read_json_file(int *jsonsize) {
+static void load_json_file() {
     int jsonfd = open("pentax_settings.json", O_RDONLY);
     if (jsonfd == -1) {
         // cannot find in the current directory, also checking PKTDATADIR
@@ -802,31 +807,28 @@ char *read_json_file(int *jsonsize) {
         }
         if (jsonfd == -1) {
             pslr_write_log(PSLR_ERROR, "Cannot open pentax_settings.json file\n");
-            return NULL;
+            return;
         }
     }
-    *jsonsize = lseek(jsonfd, 0, SEEK_END);
+    json.size = lseek(jsonfd, 0, SEEK_END);
     lseek(jsonfd, 0, SEEK_SET);
-    char *jsontext=malloc(*jsonsize);
-    ssize_t ret = read(jsonfd, jsontext, *jsonsize);
-    if (ret < *jsonsize) {
+    char *jsontext=malloc(json.size);
+    ssize_t ret = read(jsonfd, jsontext, json.size);
+    if (ret < json.size) {
         fprintf(stderr, "Could not read pentax_settings.json file\n");
         free(jsontext);
-        return NULL;
+        return;
     }
-    DPRINT("json text:\n%.*s\n", *jsonsize, jsontext);
-    return jsontext;
+    DPRINT("json text:\n%.*s\n", json.size, jsontext);
 }
 
 pslr_setting_def_t *setting_file_process(const char *cameraid, int *def_num) {
     pslr_setting_def_t defs[128];
     *def_num=0;
-    if (jsontext == NULL) {
-        jsontext = read_json_file(&jsonsize);
-    }
+    pthread_once(&json.once, load_json_file);
     size_t json_part_length;
     const char *json_part;
-    if (!(json_part = js0n(cameraid, strlen(cameraid), jsontext, jsonsize, &json_part_length))) {
+    if (!(json_part = js0n(cameraid, strlen(cameraid), json.text, json.size, &json_part_length))) {
         pslr_write_log(PSLR_ERROR, "JSON: Cannot find camera model\n");
         return NULL;
     }
@@ -971,7 +973,7 @@ void ipslr_settings_parser_json(const char *cameraid, ipslr_handle_t *p, pslr_se
 }
 
 
-ipslr_model_info_t camera_models[] = {
+const ipslr_model_info_t camera_models[] = {
     { 0x12aa2, "*ist DS",     true,  true,  true,  false, false, false, 264, 3, {6, 4, 2},       5, 4000, 200, 3200, 200,  3200,  PSLR_JPEG_IMAGE_TONE_BRIGHT,           false, 11, ipslr_status_parse_istds},
     { 0x12cd2, "K20D",        false, true,  true,  false, false, false, 412, 4, {14, 10, 6, 2},  7, 4000, 100, 3200, 100,  6400,  PSLR_JPEG_IMAGE_TONE_MONOCHROME,       true,  11, ipslr_status_parse_k20d},
     { 0x12c1e, "K10D",        false, true,  true,  false, false, false, 392, 3, {10, 6, 2},      7, 4000, 100, 1600, 100,  1600,  PSLR_JPEG_IMAGE_TONE_BRIGHT,           false, 11, ipslr_status_parse_k10d},
@@ -1010,7 +1012,7 @@ ipslr_model_info_t camera_models[] = {
     { 0x13254, "K-3III",      false, false, true,  true,  false, true,  452,  4, {24, 14, 6, 2}, 9, 8000, 100, 51200, 100, 51200, PSLR_JPEG_IMAGE_TONE_BLEACH_BYPASS, true,  27, ipslr_status_parse_k3}
 };
 
-ipslr_model_info_t *pslr_find_model_by_id( uint32_t id ) {
+const ipslr_model_info_t *pslr_find_model_by_id( uint32_t id ) {
     unsigned int i;
     for ( i = 0; i<sizeof (camera_models) / sizeof (camera_models[0]); i++) {
         if ( camera_models[i].id == id ) {

@@ -105,6 +105,11 @@ typedef struct {
     uint32_t battery_2;
     uint32_t battery_3;
     uint32_t battery_4;
+    /* debug fields */
+#ifdef PSLR_DEBUG
+    uint8_t lastbuf[MAX_STATUS_BUF_SIZE];
+    int first;
+#endif
 } pslr_status;
 
 typedef enum {
@@ -184,7 +189,7 @@ struct ipslr_handle {
     pslr_status status;
     pslr_settings settings;
     uint32_t id;
-    ipslr_model_info_t *model;
+    const ipslr_model_info_t *model;
     ipslr_segment_t segments[MAX_SEGMENTS];
     uint32_t segment_count;
     uint32_t offset;
@@ -192,22 +197,22 @@ struct ipslr_handle {
     uint8_t settings_buffer[SETTINGS_BUFFER_SIZE];
 };
 
-ipslr_model_info_t *pslr_find_model_by_id( uint32_t id );
+const ipslr_model_info_t *pslr_find_model_by_id( uint32_t id );
 
-int pslr_get_hw_jpeg_quality( ipslr_model_info_t *model, int user_jpeg_stars);
+int pslr_get_hw_jpeg_quality( const ipslr_model_info_t *model, int user_jpeg_stars);
 
-uint32_t get_uint32_be(uint8_t *buf);
-uint32_t get_uint32_le(uint8_t *buf);
+uint32_t get_uint32_be(const uint8_t *buf);
+uint32_t get_uint32_le(const uint8_t *buf);
 void set_uint32_be(uint32_t v, uint8_t *buf);
 void set_uint32_le(uint32_t v, uint8_t *buf);
 
-typedef uint32_t (*get_uint32_func)(uint8_t *buf);
+typedef uint32_t (*get_uint32_func)(const uint8_t *buf);
 typedef uint16_t (*get_uint16_func)(const uint8_t *buf);
-typedef int32_t (*get_int32_func)(uint8_t *buf);
+typedef int32_t (*get_int32_func)(const uint8_t *buf);
 
-char *pslr_hexdump(uint8_t *buf, uint32_t bufLen);
-void hexdump(uint8_t *buf, uint32_t bufLen);
-void hexdump_debug(uint8_t *buf, uint32_t bufLen);
+char *pslr_hexdump(const uint8_t *buf, uint32_t bufLen);
+void hexdump(const uint8_t *buf, uint32_t bufLen);
+void hexdump_debug(const uint8_t *buf, uint32_t bufLen);
 const char* int_to_binary( uint16_t x );
 
 #endif

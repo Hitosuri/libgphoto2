@@ -39,25 +39,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char* pslr_color_space_str[PSLR_COLOR_SPACE_MAX] = {
+static const char* const pslr_color_space_str[PSLR_COLOR_SPACE_MAX] = {
     "sRGB",
     "AdobeRGB"
 };
 
-const char* pslr_af_mode_str[PSLR_AF_MODE_MAX] = {
+static const char* const pslr_af_mode_str[PSLR_AF_MODE_MAX] = {
     "MF",
     "AF.S",
     "AF.C",
     "AF.A"
 };
 
-const char* pslr_ae_metering_str[PSLR_AE_METERING_MAX] = {
+static const char* const pslr_ae_metering_str[PSLR_AE_METERING_MAX] = {
     "Multi",
     "Center",
     "Spot"
 };
 
-const char* pslr_flash_mode_str[PSLR_FLASH_MODE_MAX] = {
+static const char* const pslr_flash_mode_str[PSLR_FLASH_MODE_MAX] = {
     "Manual",
     "Manual-RedEye",
     "Slow",
@@ -69,7 +69,7 @@ const char* pslr_flash_mode_str[PSLR_FLASH_MODE_MAX] = {
     "Wireless"
 };
 
-const char* pslr_drive_mode_str[PSLR_DRIVE_MODE_MAX] = {
+static const char* const pslr_drive_mode_str[PSLR_DRIVE_MODE_MAX] = {
     "Single", /* Bracketing also returns Single */
     "Continuous-HI",
     "SelfTimer-12",
@@ -79,7 +79,7 @@ const char* pslr_drive_mode_str[PSLR_DRIVE_MODE_MAX] = {
     "Continuous-LO"
 };
 
-const char*  pslr_af_point_sel_str[PSLR_AF_POINT_SEL_MAX] = {
+static const char* const  pslr_af_point_sel_str[PSLR_AF_POINT_SEL_MAX] = {
     "Auto-5",
     "Select",
     "Spot",
@@ -87,7 +87,7 @@ const char*  pslr_af_point_sel_str[PSLR_AF_POINT_SEL_MAX] = {
     "Expanded"
 };
 
-const char*  pslr_af11_point_str[11] = {
+static const char* const  pslr_af11_point_str[11] = {
     "topleft",
     "topmiddle",
     "topright",
@@ -101,7 +101,7 @@ const char*  pslr_af11_point_str[11] = {
     "bottomright"
 };
 
-const char* pslr_jpeg_image_tone_str[PSLR_JPEG_IMAGE_TONE_MAX] = {
+static const char* const pslr_jpeg_image_tone_str[PSLR_JPEG_IMAGE_TONE_MAX] = {
     "Natural",
     "Bright",
     "Portrait",
@@ -117,7 +117,7 @@ const char* pslr_jpeg_image_tone_str[PSLR_JPEG_IMAGE_TONE_MAX] = {
     "Auto"
 };
 
-const char* pslr_white_balance_mode_str[PSLR_WHITE_BALANCE_MODE_MAX] = {
+static const char* const pslr_white_balance_mode_str[PSLR_WHITE_BALANCE_MODE_MAX] = {
     "Auto",
     "Daylight",
     "Shade",
@@ -138,28 +138,28 @@ const char* pslr_white_balance_mode_str[PSLR_WHITE_BALANCE_MODE_MAX] = {
     "MultiAuto"
 };
 
-const char* pslr_custom_ev_steps_str[PSLR_CUSTOM_EV_STEPS_MAX] = {
+static const char* const pslr_custom_ev_steps_str[PSLR_CUSTOM_EV_STEPS_MAX] = {
     "1/2",
     "1/3"
 };
 
-const char* pslr_custom_sensitivity_steps_str[PSLR_CUSTOM_SENSITIVITY_STEPS_MAX] = {
+static const char* const pslr_custom_sensitivity_steps_str[PSLR_CUSTOM_SENSITIVITY_STEPS_MAX] = {
     "1",
     "As"
 };
 
-const char* pslr_image_format_str[PSLR_IMAGE_FORMAT_MAX] = {
+static const char* const pslr_image_format_str[PSLR_IMAGE_FORMAT_MAX] = {
     "JPEG",
     "RAW",
     "RAW+"
 };
 
-const char* pslr_raw_format_str[PSLR_RAW_FORMAT_MAX] = {
+static const char* const pslr_raw_format_str[PSLR_RAW_FORMAT_MAX] = {
     "PEF",
     "DNG"
 };
 
-const char* pslr_scene_mode_str[PSLR_SCENE_MODE_MAX] = {
+static const char* const pslr_scene_mode_str[PSLR_SCENE_MODE_MAX] = {
     "NONE",
     "HISPEED",
     "DOF",
@@ -215,7 +215,7 @@ int str_comparison_i (const char *s1, const char *s2, int n) {
     return c1 - c2;
 }
 
-int find_in_array( const char** array, int length, char* str ) {
+int find_in_array( const char* const* array, int length, const char* str ) {
     int i;
     int found_index=-1;
     size_t found_index_length=0;
@@ -231,7 +231,7 @@ int find_in_array( const char** array, int length, char* str ) {
 }
 
 static
-const char *get_pslr_str( const char** array, int length, int value ) {
+const char *get_pslr_str( const char* const* array, int length, int value ) {
     if (value >=0 && value < length) {
         return array[value];
     } else {
@@ -242,7 +242,7 @@ const char *get_pslr_str( const char** array, int length, int value ) {
 }
 
 
-pslr_color_space_t pslr_get_color_space( char *str ) {
+pslr_color_space_t pslr_get_color_space( const char *str ) {
     return find_in_array( pslr_color_space_str, sizeof(pslr_color_space_str)/sizeof(pslr_color_space_str[0]),str);
 }
 
@@ -250,7 +250,7 @@ const char *pslr_get_color_space_str( pslr_color_space_t value ) {
     return get_pslr_str( pslr_color_space_str, sizeof(pslr_color_space_str)/sizeof(pslr_color_space_str[0]),value);
 }
 
-pslr_af_mode_t pslr_get_af_mode( char *str ) {
+pslr_af_mode_t pslr_get_af_mode( const char *str ) {
     return find_in_array( pslr_af_mode_str, sizeof(pslr_af_mode_str)/sizeof(pslr_af_mode_str[0]),str);
 }
 
@@ -258,7 +258,7 @@ const char *pslr_get_af_mode_str( pslr_af_mode_t value ) {
     return get_pslr_str( pslr_af_mode_str, sizeof(pslr_af_mode_str)/sizeof(pslr_af_mode_str[0]),value);
 }
 
-pslr_ae_metering_t pslr_get_ae_metering( char *str ) {
+pslr_ae_metering_t pslr_get_ae_metering( const char *str ) {
     return find_in_array( pslr_ae_metering_str, sizeof(pslr_ae_metering_str)/sizeof(pslr_ae_metering_str[0]),str);
 }
 
@@ -266,7 +266,7 @@ const char *pslr_get_ae_metering_str( pslr_ae_metering_t value ) {
     return get_pslr_str( pslr_ae_metering_str, sizeof(pslr_ae_metering_str)/sizeof(pslr_ae_metering_str[0]),value);
 }
 
-pslr_flash_mode_t pslr_get_flash_mode( char *str ) {
+pslr_flash_mode_t pslr_get_flash_mode( const char *str ) {
     return find_in_array( pslr_flash_mode_str, sizeof(pslr_flash_mode_str)/sizeof(pslr_flash_mode_str[0]),str);
 }
 
@@ -274,7 +274,7 @@ const char *pslr_get_flash_mode_str( pslr_flash_mode_t value ) {
     return get_pslr_str( pslr_flash_mode_str, sizeof(pslr_flash_mode_str)/sizeof(pslr_flash_mode_str[0]),value);
 }
 
-pslr_drive_mode_t pslr_get_drive_mode( char *str ) {
+pslr_drive_mode_t pslr_get_drive_mode( const char *str ) {
     return find_in_array( pslr_drive_mode_str, sizeof(pslr_drive_mode_str)/sizeof(pslr_drive_mode_str[0]),str);
 }
 
@@ -282,7 +282,7 @@ const char *pslr_get_drive_mode_str( pslr_drive_mode_t value ) {
     return get_pslr_str( pslr_drive_mode_str, sizeof(pslr_drive_mode_str)/sizeof(pslr_drive_mode_str[0]),value);
 }
 
-pslr_af_point_sel_t pslr_get_af_point_sel( char *str ) {
+pslr_af_point_sel_t pslr_get_af_point_sel( const char *str ) {
     return find_in_array( pslr_af_point_sel_str, sizeof(pslr_af_point_sel_str)/sizeof(pslr_af_point_sel_str[0]),str);
 }
 
@@ -315,7 +315,7 @@ char *pslr_get_af11_point_str( uint32_t value ) {
 }
 
 
-pslr_jpeg_image_tone_t pslr_get_jpeg_image_tone( char *str ) {
+pslr_jpeg_image_tone_t pslr_get_jpeg_image_tone( const char *str ) {
     return find_in_array( pslr_jpeg_image_tone_str, sizeof(pslr_jpeg_image_tone_str)/sizeof(pslr_jpeg_image_tone_str[0]),str);
 }
 
@@ -323,7 +323,7 @@ const char *pslr_get_jpeg_image_tone_str( pslr_jpeg_image_tone_t value ) {
     return get_pslr_str( pslr_jpeg_image_tone_str, sizeof(pslr_jpeg_image_tone_str)/sizeof(pslr_jpeg_image_tone_str[0]),value);
 }
 
-pslr_white_balance_mode_t pslr_get_white_balance_mode( char *str ) {
+pslr_white_balance_mode_t pslr_get_white_balance_mode( const char *str ) {
     return find_in_array( pslr_white_balance_mode_str, sizeof(pslr_white_balance_mode_str)/sizeof(pslr_white_balance_mode_str[0]),str);
 }
 

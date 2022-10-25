@@ -65,11 +65,12 @@
 	}                      	\
 }
 
-
-char* CDS_Control  = ":60606/Server0/CDS_control";
-int ReadoutMode = 2; // this should be picked up from the settings.... 0-> JPG; 1->RAW; 2 -> Thumbnails
-char* cameraShutterSpeed = "B"; // //placeholder to store the value of the shutterspeed set in camera; "B" is for bulb.
-int captureDuration = 10; //placeholder to store the value of the bulb shot this should be taken as input. note that my primary goal is in fact to perform bulb captures. but this should be extended for sure to take Shutter Speed capture as set in camera
+// TODO: looks like these are not supposed to be constants, yet for now they're used as such (not set anywhere else).
+// Figure out if they're meant to be mutated.
+static const char* const CDS_Control  = ":60606/Server0/CDS_control";
+// static const int ReadoutMode = 2; // this should be picked up from the settings.... 0-> JPG; 1->RAW; 2 -> Thumbnails
+static const char* const cameraShutterSpeed = "B"; // //placeholder to store the value of the shutterspeed set in camera; "B" is for bulb.
+static const int captureDuration = 10; //placeholder to store the value of the bulb shot this should be taken as input. note that my primary goal is in fact to perform bulb captures. but this should be extended for sure to take Shutter Speed capture as set in camera
 
 static int NumberPix(Camera *camera);
 static char* loadCmd (Camera *camera,char* cmd);
@@ -584,12 +585,12 @@ Get_Quality(Camera *camera) {
 	return generic_setting_getter(camera,"quality");
 }
 
-static void
-Set_quality(Camera *camera,const char* Quality) {
-	char buf[200];
-	sprintf(buf,"cam.cgi?mode=setsetting&type=quality&value=%s", Quality);
-	loadCmd(camera,buf);
-}
+// static void
+// Set_quality(Camera *camera,const char* Quality) {
+// 	char buf[200];
+// 	sprintf(buf,"cam.cgi?mode=setsetting&type=quality&value=%s", Quality);
+// 	loadCmd(camera,buf);
+// }
 
 
 static int
@@ -710,12 +711,9 @@ NumberPix(Camera *camera) {
 }
 
 /*utility function to creat a SOAP envelope for the lumix cam */
-static char*
-SoapEnvelop(int start, int num){
-	static char  Envelop[1000];
-	snprintf(Envelop,1000, "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:Browse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\"xmlns:pana=\"urn:schemas-panasonic-com:pana\"><ObjectID>0</ObjectID><BrowseFlag>BrowseDirectChildren</BrowseFlag><Filter>*</Filter><StartingIndex>%d</StartingIndex><RequestedCount>%d</RequestedCount><SortCriteria></SortCriteria><pana:X_FromCP>LumixLink2.0</pana:X_FromCP></u:Browse></s:Body></s:Envelope>",start,num);
-
-	return Envelop;
+static void
+SoapEnvelop(int start, int num, char *buf, size_t buf_len){
+	snprintf(buf,buf_len, "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:Browse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\"xmlns:pana=\"urn:schemas-panasonic-com:pana\"><ObjectID>0</ObjectID><BrowseFlag>BrowseDirectChildren</BrowseFlag><Filter>*</Filter><StartingIndex>%d</StartingIndex><RequestedCount>%d</RequestedCount><SortCriteria></SortCriteria><pana:X_FromCP>LumixLink2.0</pana:X_FromCP></u:Browse></s:Body></s:Envelope>",start,num);
 }
 
 /*
@@ -728,7 +726,7 @@ GetPixRange(Camera *camera, int start, int num) {
 	xmlDocPtr       docin, docin2;
 	xmlNodePtr      docroot, docroot2, output, output2, next;
 	xmlChar 	*xchar, *numread;
-	char*		SoapMsg;
+	char 		SoapMsg[1000];
 	CURL 		*curl;
 	CURLcode	res;
 	struct curl_slist *list = NULL;
@@ -749,7 +747,7 @@ GetPixRange(Camera *camera, int start, int num) {
 	}
 
 	while (num > 0) {
-		SoapMsg = SoapEnvelop(start, num);
+		SoapEnvelop(start, num, SoapMsg, sizeof(SoapMsg));
 		//GP_LOG_D("SoapMsg is %s \n", SoapMsg);
 
 		curl = curl_easy_init();
@@ -994,7 +992,7 @@ Raw:
 	return strdup((char*)xchar);
 }
 
-static struct shuttermap {
+static const struct shuttermap {
 	char	*cameraspeed;
 	char	*speed;
 } shutterspeeds[] = {
@@ -1059,7 +1057,7 @@ static struct shuttermap {
 	{"256/256","B"},
 };
 
-static struct aperturemap {
+static const struct aperturemap {
 	char	*cameraaperture;
 	char	*aperture;
 } apertures[] = {
@@ -1837,7 +1835,7 @@ int camera_abilities (CameraAbilitiesList *list) {
 * are NULL.
 *
 */
-CameraFilesystemFuncs fsfuncs = {
+const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.folder_list_func = folder_list_func,
 //	.get_info_func = get_info_func,

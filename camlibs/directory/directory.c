@@ -767,7 +767,7 @@ storage_info_func (CameraFilesystem *fs,
 	return GP_ERROR_NOT_SUPPORTED;
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.folder_list_func = folder_list_func,
 	.set_info_func = set_info_func,

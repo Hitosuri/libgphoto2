@@ -171,7 +171,7 @@ print_version_comment(FILE *out,
 	for (n=0; (module_versions[n].name != NULL) && (module_versions[n].version_func != NULL); n++) {
 		const char *name = module_versions[n].name;
 		GPVersionFunc func = module_versions[n].version_func;
-		const char **v = func(GP_VERSION_SHORT);
+		const char *const *v = func(GP_VERSION_SHORT);
 		unsigned int i;
 		if (!v) { continue; }
 		if (!v[0]) { continue; }
@@ -1302,7 +1302,8 @@ json_end_func (const func_params_t *params, void *data) {
 }
 
 /* time zero for debug log time stamps */
-struct timeval glob_tv_zero = { 0, 0 };
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables) - this app is not multithreaded.
+static struct timeval glob_tv_zero = { 0, 0 };
 
 static void
 debug_func (GPLogLevel level, const char *domain, const char *str,

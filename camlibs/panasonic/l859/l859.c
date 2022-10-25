@@ -463,7 +463,6 @@ static int get_file_func (CameraFilesystem *fs, const char *folder,
 	Camera *camera = data;
 	int		index;
 	int		size;
-	int		i;
 	int		s;
 	char	buffer[112];
 	int		bufIndex;
@@ -491,7 +490,7 @@ static int get_file_func (CameraFilesystem *fs, const char *folder,
 
 	id = gp_context_progress_start (context, size,
 		_("Downloading '%s'..."), filename);
-	for (i = 0, s = 0; s < size; i++) {
+	for (s = 0; s < size;) {
 
 		if (l859_sendcmd(camera, L859_CMD_ACK) != GP_OK)
 			return GP_ERROR;
@@ -605,7 +604,7 @@ static int camera_about (Camera *camera, CameraText *about,
 	return (GP_OK);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_file_func = get_file_func,
 	.delete_all_func = delete_all_func,

@@ -668,7 +668,7 @@ nikon_wait_busy(PTPParams *params, int waitms, int timeout) {
 }
 
 struct submenu;
-#define CONFIG_GET_ARGS Camera *camera, CameraWidget **widget, struct submenu* menu, PTPDevicePropDesc *dpd
+#define CONFIG_GET_ARGS Camera *camera, CameraWidget **widget, const struct submenu* menu, PTPDevicePropDesc *dpd
 #define CONFIG_GET_NAMES camera, widget, menu, dpd
 typedef int (*get_func)(CONFIG_GET_ARGS);
 #define CONFIG_PUT_ARGS Camera *camera, CameraWidget *widget, PTPPropValue *propval, PTPDevicePropDesc *dpd, int *alreadyset
@@ -676,7 +676,7 @@ typedef int (*get_func)(CONFIG_GET_ARGS);
 typedef int (*put_func)(CONFIG_PUT_ARGS);
 
 struct menu;
-#define CONFIG_MENU_GET_ARGS Camera *camera, CameraWidget **widget, struct menu* menu
+#define CONFIG_MENU_GET_ARGS Camera *camera, CameraWidget **widget, const struct menu* menu
 typedef int (*get_menu_func)(CONFIG_MENU_GET_ARGS);
 #define CONFIG_MENU_PUT_ARGS Camera *camera, CameraWidget *widget
 typedef int (*put_menu_func)(CONFIG_MENU_PUT_ARGS);
@@ -699,7 +699,7 @@ struct menu {
 	uint16_t	usb_productid;
 
 	/* Either: Standard menu */
-	struct	submenu	*submenus;
+	const struct	submenu	*submenus;
 	/* Or: Non-standard menu with custom behaviour */
 	get_menu_func	getfunc;
 	put_menu_func	putfunc;
@@ -717,7 +717,7 @@ struct deviceproptable##bits {		\
 };\
 \
 static int \
-_get_Generic##bits##Table(CONFIG_GET_ARGS, struct deviceproptable##bits * tbl, int tblsize) { \
+_get_Generic##bits##Table(CONFIG_GET_ARGS, const struct deviceproptable##bits * tbl, int tblsize) { \
 	int i, j; \
 	int isset = FALSE, isset2 = FALSE; \
  \
@@ -833,7 +833,7 @@ _get_Generic##bits##Table(CONFIG_GET_ARGS, struct deviceproptable##bits * tbl, i
 \
 \
 static int \
-_put_Generic##bits##Table(CONFIG_PUT_ARGS, struct deviceproptable##bits * tbl, int tblsize) { \
+_put_Generic##bits##Table(CONFIG_PUT_ARGS, const struct deviceproptable##bits * tbl, int tblsize) { \
 	char *value; \
 	int i, intval, j; \
 	int foundvalue = 0; \
@@ -1437,7 +1437,7 @@ _get_CANON_FirmwareVersion(CONFIG_GET_ARGS) {
 	return (GP_OK);
 }
 
-static struct deviceproptableu16 whitebalance[] = {
+static const struct deviceproptableu16 whitebalance[] = {
 	{ N_("Manual"),			0x0001, 0 },
 	{ N_("Automatic"),		0x0002, 0 },
 	{ N_("One-push Automatic"),	0x0003, 0 },
@@ -1488,7 +1488,7 @@ static struct deviceproptableu16 whitebalance[] = {
 };
 GENERIC16TABLE(WhiteBalance,whitebalance)
 
-static struct deviceproptableu16 olympus_whitebalance[] = {
+static const struct deviceproptableu16 olympus_whitebalance[] = {
 	{ N_("Automatic"),		0x0001, 0 },
 	{ N_("Daylight"),		0x0002, 0 },
 	{ N_("Shade"),			0x0003, 0 },
@@ -1505,7 +1505,7 @@ static struct deviceproptableu16 olympus_whitebalance[] = {
 };
 GENERIC16TABLE(Olympus_WhiteBalance,olympus_whitebalance)
 
-static struct deviceproptableu16 fuji_imageformat[] = {
+static const struct deviceproptableu16 fuji_imageformat[] = {
 	{ N_("RAW"),			1,	PTP_VENDOR_FUJI },
 	{ N_("JPEG Fine"),		2,	PTP_VENDOR_FUJI },
 	{ N_("JPEG Normal"),		3,	PTP_VENDOR_FUJI },
@@ -1514,7 +1514,7 @@ static struct deviceproptableu16 fuji_imageformat[] = {
 };
 GENERIC16TABLE(Fuji_ImageFormat,fuji_imageformat)
 
-static struct deviceproptableu16 fuji_graineffect[] = {
+static const struct deviceproptableu16 fuji_graineffect[] = {
 	{ N_("Weak Small"),	2,	PTP_VENDOR_FUJI },
 	{ N_("Strong Small"),	3,	PTP_VENDOR_FUJI },
 	{ N_("Weak Large"),	4,	PTP_VENDOR_FUJI },
@@ -1524,7 +1524,7 @@ static struct deviceproptableu16 fuji_graineffect[] = {
 };
 GENERIC16TABLE(Fuji_GrainEffect,fuji_graineffect)
 
-static struct deviceproptableu16 olympus_imageformat[] = {
+static const struct deviceproptableu16 olympus_imageformat[] = {
 	{ N_("RAW"),			0x020,	PTP_VENDOR_GP_OLYMPUS_OMD },
 	{ N_("Large Fine JPEG"),	0x101,	PTP_VENDOR_GP_OLYMPUS_OMD },
 	{ N_("Large Normal JPEG"),	0x102,	PTP_VENDOR_GP_OLYMPUS_OMD },
@@ -1537,7 +1537,7 @@ static struct deviceproptableu16 olympus_imageformat[] = {
 };
 GENERIC16TABLE(Olympus_Imageformat,olympus_imageformat)
 
-static struct deviceproptableu16 fuji_releasemode[] = {
+static const struct deviceproptableu16 fuji_releasemode[] = {
 	{ N_("Single frame"),		1,	PTP_VENDOR_FUJI },
 	{ N_("Continuous low speed"),	2,	PTP_VENDOR_FUJI },
 	{ N_("Continuous high speed"),	3,	PTP_VENDOR_FUJI },
@@ -1546,7 +1546,7 @@ static struct deviceproptableu16 fuji_releasemode[] = {
 };
 GENERIC16TABLE(Fuji_ReleaseMode,fuji_releasemode)
 
-static struct deviceproptableu32 sony3_capturemode[] = {
+static const struct deviceproptableu32 sony3_capturemode[] = {
 	{ N_("Single Shot"),				0x00000001, 	0 },
 	{ N_("Continuous Shooting Hi"),			0x00010002, 	0 },
 	{ N_("Continuous Shooting Hi+"),		0x00018010, 	0 },
@@ -1703,7 +1703,7 @@ static struct deviceproptableu32 sony3_capturemode[] = {
 };
 GENERIC32TABLE(Sony3_CaptureMode,sony3_capturemode)
 
-static struct deviceproptableu16 fuji_filmsimulation[] = {
+static const struct deviceproptableu16 fuji_filmsimulation[] = {
 	{ N_("PROVIA/Standard"),            1,	PTP_VENDOR_FUJI },
 	{ N_("Velvia/Vivid"),               2,	PTP_VENDOR_FUJI },
 	{ N_("ASTIA/Soft"),                 3,	PTP_VENDOR_FUJI },
@@ -1725,7 +1725,7 @@ static struct deviceproptableu16 fuji_filmsimulation[] = {
 };
 GENERIC16TABLE(Fuji_FilmSimulation,fuji_filmsimulation)
 
-static struct deviceproptableu16 fuji_prioritymode[] = {
+static const struct deviceproptableu16 fuji_prioritymode[] = {
 	{ N_("Camera"),	1,	PTP_VENDOR_FUJI },
 	{ N_("USB"),	2,	PTP_VENDOR_FUJI },
 };
@@ -1840,19 +1840,19 @@ _put_Olympus_ExpCompensation(CONFIG_PUT_ARGS) {
 }
 
 
-static struct deviceproptableu16 canon_assistlight[] = {
+static const struct deviceproptableu16 canon_assistlight[] = {
 	{ N_("On"),	0x0000, PTP_VENDOR_CANON },
 	{ N_("Off"),	0x0001, PTP_VENDOR_CANON },
 };
 GENERIC16TABLE(Canon_AssistLight,canon_assistlight)
 
-static struct deviceproptableu16 canon_autorotation[] = {
+static const struct deviceproptableu16 canon_autorotation[] = {
 	{ N_("On"),	0x0000, PTP_VENDOR_CANON },
 	{ N_("Off"),	0x0001, PTP_VENDOR_CANON },
 };
 GENERIC16TABLE(Canon_AutoRotation,canon_autorotation)
 
-static struct deviceproptableu16 canon_beepmode[] = {
+static const struct deviceproptableu16 canon_beepmode[] = {
 	{ N_("Off"),	0x00, PTP_VENDOR_CANON },
 	{ N_("On"),	0x01, PTP_VENDOR_CANON },
 };
@@ -2176,7 +2176,7 @@ _put_Nikon_MovieLoopLength(CONFIG_PUT_ARGS)
 }
 
 
-static struct deviceproptableu8 canon_quality[] = {
+static const struct deviceproptableu8 canon_quality[] = {
 	{ N_("undefined"),	0x00, 0 },
 	{ N_("economy"),	0x01, 0 },
 	{ N_("normal"),		0x02, 0 },
@@ -2186,14 +2186,14 @@ static struct deviceproptableu8 canon_quality[] = {
 };
 GENERIC8TABLE(Canon_Quality,canon_quality)
 
-static struct deviceproptableu8 canon_fullview_fileformat[] = {
+static const struct deviceproptableu8 canon_fullview_fileformat[] = {
 	{ N_("Undefined"),	0x00, 0 },
 	{ N_("JPEG"),		0x01, 0 },
 	{ N_("CRW"),		0x02, 0 },
 };
 GENERIC8TABLE(Canon_Capture_Format,canon_fullview_fileformat)
 
-static struct deviceproptableu8 canon_shootmode[] = {
+static const struct deviceproptableu8 canon_shootmode[] = {
 	{ N_("Auto"),		0x01, 0 },
 	{ N_("TV"),		0x02, 0 },
 	{ N_("AV"),		0x03, 0 },
@@ -2206,7 +2206,7 @@ static struct deviceproptableu8 canon_shootmode[] = {
 };
 GENERIC8TABLE(Canon_ShootMode,canon_shootmode)
 
-static struct deviceproptableu16 canon_eos_autoexposuremode[] = {
+static const struct deviceproptableu16 canon_eos_autoexposuremode[] = {
 	{ N_("P"),		0x0000, 0 },
 	{ N_("TV"),		0x0001, 0 },
 	{ N_("AV"),		0x0002, 0 },
@@ -2252,7 +2252,7 @@ static struct deviceproptableu16 canon_eos_autoexposuremode[] = {
 };
 GENERIC16TABLE(Canon_EOS_AutoExposureMode,canon_eos_autoexposuremode)
 
-static struct deviceproptableu32 canon_eos_alomode[] = {
+static const struct deviceproptableu32 canon_eos_alomode[] = {
 	{ N_("Standard"),				0x10000, 0 },
 	{ N_("Standard (disabled in manual exposure)"),	0x00000, 0 },
 	{ N_("Low"),					0x10101, 0 },
@@ -2267,7 +2267,7 @@ static struct deviceproptableu32 canon_eos_alomode[] = {
 };
 GENERIC32TABLE(Canon_EOS_AloMode,canon_eos_alomode)
 
-static struct deviceproptableu8 canon_flash[] = {
+static const struct deviceproptableu8 canon_flash[] = {
 	{ N_("off"),				0, 0 },
 	{ N_("auto"),				1, 0 },
 	{ N_("on"),				2, 0 },
@@ -2278,7 +2278,7 @@ static struct deviceproptableu8 canon_flash[] = {
 };
 GENERIC8TABLE(Canon_FlashMode,canon_flash)
 
-static struct deviceproptableu8 nikon_internalflashmode[] = {
+static const struct deviceproptableu8 nikon_internalflashmode[] = {
 	{ N_("iTTL"),		0, 0 },
 	{ N_("Manual"),		1, 0 },
 	{ N_("Commander"),	2, 0 },
@@ -2286,35 +2286,35 @@ static struct deviceproptableu8 nikon_internalflashmode[] = {
 };
 GENERIC8TABLE(Nikon_InternalFlashMode,nikon_internalflashmode)
 
-static struct deviceproptableu8 nikon_flashcommandermode[] = {
+static const struct deviceproptableu8 nikon_flashcommandermode[] = {
 	{ N_("TTL"),		0, 0 },
 	{ N_("Auto Aperture"),	1, 0 },
 	{ N_("Full Manual"),	2, 0 },
 };
 GENERIC8TABLE(Nikon_FlashCommanderMode,nikon_flashcommandermode)
 
-static struct deviceproptableu8 nikon_liveviewsize[] = {
+static const struct deviceproptableu8 nikon_liveviewsize[] = {
 	{ N_("QVGA"),		1, 0 },
 	{ N_("VGA"),		2, 0 },
 	{ N_("XGA"),		3, 0 },
 };
 GENERIC8TABLE(Nikon_LiveViewSize,nikon_liveviewsize)
 
-static struct deviceproptableu16 fuji_liveviewsize[] = {
+static const struct deviceproptableu16 fuji_liveviewsize[] = {
 	{ N_("XGA"),		1, 0 },
 	{ N_("VGA"),		2, 0 },
 	{ N_("QVGA"),		3, 0 },
 };
 GENERIC16TABLE(Fuji_LiveViewSize,fuji_liveviewsize)
 
-static struct deviceproptableu8 sony_qx_liveviewsize[] = {
+static const struct deviceproptableu8 sony_qx_liveviewsize[] = {
 	{ "640x480",		1, 0 },
 	{ "1024x768",		2, 0 },
 	{ "1920x1280",		3, 0 },
 };
 GENERIC8TABLE(Sony_QX_LiveViewSize,sony_qx_liveviewsize)
 
-static struct deviceproptablei8 sony_prioritymode[] = {
+static const struct deviceproptablei8 sony_prioritymode[] = {
 	{ N_("Camera"),		0, 0 },
 	{ N_("Application"),	1, 0 },
 };
@@ -2380,7 +2380,7 @@ _put_Canon_LiveViewSize(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu8 nikon_flashcommanderpower[] = {
+static const struct deviceproptableu8 nikon_flashcommanderpower[] = {
 	{ N_("Full"),		0, 0 },
 	{ "1/2",		1, 0 },
 	{ "1/4",		2, 0 },
@@ -2393,7 +2393,7 @@ static struct deviceproptableu8 nikon_flashcommanderpower[] = {
 GENERIC8TABLE(Nikon_FlashCommanderPower,nikon_flashcommanderpower)
 
 /* 0xd1d3 */
-static struct deviceproptableu8 nikon_flashcommandchannel[] = {
+static const struct deviceproptableu8 nikon_flashcommandchannel[] = {
 	{ "1",		0, 0 },
 	{ "2",		1, 0 },
 	{ "3",		2, 0 },
@@ -2402,7 +2402,7 @@ static struct deviceproptableu8 nikon_flashcommandchannel[] = {
 GENERIC8TABLE(Nikon_FlashCommandChannel,nikon_flashcommandchannel)
 
 /* 0xd1d4 */
-static struct deviceproptableu8 nikon_flashcommandselfmode[] = {
+static const struct deviceproptableu8 nikon_flashcommandselfmode[] = {
 	{ N_("TTL"),		0, 0 },
 	{ N_("Manual"),		1, 0 },
 	{ N_("Off"),		2, 0 },
@@ -2410,7 +2410,7 @@ static struct deviceproptableu8 nikon_flashcommandselfmode[] = {
 GENERIC8TABLE(Nikon_FlashCommandSelfMode,nikon_flashcommandselfmode)
 
 /* 0xd1d5, 0xd1d8, 0xd1da */
-static struct deviceproptableu8 nikon_flashcommandXcompensation[] = {
+static const struct deviceproptableu8 nikon_flashcommandXcompensation[] = {
 	{ "-3.0",		0, 0 },
 	{ "-2.7",		1, 0 },
 	{ "-2.3",		2, 0 },
@@ -2434,7 +2434,7 @@ static struct deviceproptableu8 nikon_flashcommandXcompensation[] = {
 GENERIC8TABLE(Nikon_FlashCommandXCompensation,nikon_flashcommandXcompensation)
 
 /* 0xd1d5, 0xd1d9, 0xd1dc */
-static struct deviceproptableu8 nikon_flashcommandXvalue[] = {
+static const struct deviceproptableu8 nikon_flashcommandXvalue[] = {
 	{ N_("Full"),		0, 0 },
 	{ "1/1.3",		1, 0 },
 	{ "1/1.7",		2, 0 },
@@ -2462,7 +2462,7 @@ GENERIC8TABLE(Nikon_FlashCommandXValue,nikon_flashcommandXvalue)
 
 
 /* 0xd1d7, 0xd1da */
-static struct deviceproptableu8 nikon_flashcommandXmode[] = {
+static const struct deviceproptableu8 nikon_flashcommandXmode[] = {
 	{ N_("TTL"),		0, 0 },
 	{ N_("Auto Aperture"),	1, 0 },
 	{ N_("Manual"),		2, 0 },
@@ -2471,7 +2471,7 @@ static struct deviceproptableu8 nikon_flashcommandXmode[] = {
 GENERIC8TABLE(Nikon_FlashCommandXMode,nikon_flashcommandXmode)
 
 
-static struct deviceproptableu8 nikon_afmode[] = {
+static const struct deviceproptableu8 nikon_afmode[] = {
 	{ N_("AF-S"),		0, 0 },
 	{ N_("AF-C"),		1, 0 },
 	{ N_("AF-A"),		2, 0 },
@@ -2481,13 +2481,13 @@ static struct deviceproptableu8 nikon_afmode[] = {
 };
 GENERIC8TABLE(Nikon_AFMode,nikon_afmode)
 
-static struct deviceproptableu8 nikon_videomode[] = {
+static const struct deviceproptableu8 nikon_videomode[] = {
 	{ N_("NTSC"),		0, 0 },
 	{ N_("PAL"),		1, 0 },
 };
 GENERIC8TABLE(Nikon_VideoMode,nikon_videomode)
 
-static struct deviceproptableu8 flash_modemanualpower[] = {
+static const struct deviceproptableu8 flash_modemanualpower[] = {
 	{ N_("Full"),	0x00, 0 },
 	{ "1/2",	0x01, 0 },
 	{ "1/4",	0x02, 0 },
@@ -2497,7 +2497,7 @@ static struct deviceproptableu8 flash_modemanualpower[] = {
 };
 GENERIC8TABLE(Nikon_FlashModeManualPower,flash_modemanualpower)
 
-static struct deviceproptableu8 canon_meteringmode[] = {
+static const struct deviceproptableu8 canon_meteringmode[] = {
 	{ N_("Center-weighted"),		0, 0 },
 	{ N_("Spot"),				1, 0 },
 	{ N_("Average"),			2, 0 },
@@ -2509,7 +2509,7 @@ static struct deviceproptableu8 canon_meteringmode[] = {
 };
 GENERIC8TABLE(Canon_MeteringMode,canon_meteringmode)
 
-static struct deviceproptableu8 canon_eos_picturestyle[] = {
+static const struct deviceproptableu8 canon_eos_picturestyle[] = {
 	{ N_("Standard"),	0x81, 0 },
 	{ N_("Portrait"),	0x82, 0 },
 	{ N_("Landscape"),	0x83, 0 },
@@ -2524,7 +2524,7 @@ static struct deviceproptableu8 canon_eos_picturestyle[] = {
 };
 GENERIC8TABLE(Canon_EOS_PictureStyle,canon_eos_picturestyle)
 
-static struct deviceproptableu16 canon_shutterspeed[] = {
+static const struct deviceproptableu16 canon_shutterspeed[] = {
 	{ "auto",	0x0000,0 },
 	{ "bulb",	0x0004,0 },
 	{ "bulb",	0x000c,0 },
@@ -2606,7 +2606,7 @@ static struct deviceproptableu16 canon_shutterspeed[] = {
 GENERIC16TABLE(Canon_ShutterSpeed,canon_shutterspeed)
 
 
-static struct deviceproptableu16 canon_focuspoints[] = {
+static const struct deviceproptableu16 canon_focuspoints[] = {
 	{ N_("Focusing Point on Center Only, Manual"),	0x1000, 0 },
 	{ N_("Focusing Point on Center Only, Auto"),	0x1001, 0 },
 	{ N_("Multiple Focusing Points (No Specification), Manual"),	0x3000, 0 },
@@ -2617,7 +2617,7 @@ static struct deviceproptableu16 canon_focuspoints[] = {
 };
 GENERIC16TABLE(Canon_FocusingPoint,canon_focuspoints)
 
-static struct deviceproptableu8 canon_size[] = {
+static const struct deviceproptableu8 canon_size[] = {
 	{ N_("Large"),		0x00, 0 },
 	{ N_("Medium 1"),	0x01, 0 },
 	{ N_("Medium 2"),	0x03, 0 },
@@ -2626,21 +2626,21 @@ static struct deviceproptableu8 canon_size[] = {
 };
 GENERIC8TABLE(Canon_Size,canon_size)
 
-static struct deviceproptableu8 sony_size[] = {
+static const struct deviceproptableu8 sony_size[] = {
 	{ N_("Large"),		0x01, 0 },
 	{ N_("Medium"),		0x02, 0 },
 	{ N_("Small"),		0x03, 0 },
 };
 GENERIC8TABLE(Sony_ImageSize,sony_size)
 
-static struct deviceproptableu8 nikon1_size[] = {
+static const struct deviceproptableu8 nikon1_size[] = {
 	{ N_("Small"),		0x00, 0 },
 	{ N_("Medium"),		0x01, 0 },
 	{ N_("Large"),		0x02, 0 },
 };
 GENERIC8TABLE(Nikon1_ImageSize,nikon1_size)
 
-static struct deviceproptableu8 sony_aspectratio[] = {
+static const struct deviceproptableu8 sony_aspectratio[] = {
 	{ N_("3:2"),		0x01, 0 },
 	{ N_("16:9"),		0x02, 0 },
 	{ N_("4:3"),		0x03, 0 },
@@ -2649,7 +2649,7 @@ static struct deviceproptableu8 sony_aspectratio[] = {
 GENERIC8TABLE(Sony_AspectRatio,sony_aspectratio)
 
 /* values are from 6D */
-static struct deviceproptableu32 canon_eos_aspectratio[] = {
+static const struct deviceproptableu32 canon_eos_aspectratio[] = {
 	{ "3:2",	0x0000, 0},
 	{ "1:1",	0x0001, 0},
 	{ "4:3",	0x0002, 0},
@@ -2659,7 +2659,7 @@ static struct deviceproptableu32 canon_eos_aspectratio[] = {
 GENERIC32TABLE(Canon_EOS_AspectRatio,canon_eos_aspectratio)
 
 /* actually in 1/10s of a second, but only 3 values in use */
-static struct deviceproptableu16 canon_selftimer[] = {
+static const struct deviceproptableu16 canon_selftimer[] = {
 	{ N_("Not used"),	0,	0 },
 	{ N_("10 seconds"),	100,	0 },
 	{ N_("2 seconds"), 	20,	0 },
@@ -2667,7 +2667,7 @@ static struct deviceproptableu16 canon_selftimer[] = {
 GENERIC16TABLE(Canon_SelfTimer,canon_selftimer)
 
 /* actually it is a flag value, 1 = TFT, 2 = PC, 4 = MOBILE, 8 = MOBILE2 */
-static struct deviceproptableu32 canon_eos_cameraoutput[] = {
+static const struct deviceproptableu32 canon_eos_cameraoutput[] = {
 	{ N_("Off"),		0, 0 }, /*On 5DM3, LCD/TFT is off, mirror down and optical view finder enabled */
 	{ N_("TFT"),		1, 0 },
 	{ N_("PC"), 		2, 0 },
@@ -2683,7 +2683,7 @@ static struct deviceproptableu32 canon_eos_cameraoutput[] = {
 };
 GENERIC32TABLE(Canon_EOS_CameraOutput,canon_eos_cameraoutput)
 
-static struct deviceproptableu32 canon_eos_afmethod[] = {
+static const struct deviceproptableu32 canon_eos_afmethod[] = {
 	{ N_("Quick"),			0, 0 },
 	{ N_("Live"),			1, 0 },
 	{ N_("LiveFace"), 		2, 0 },
@@ -2702,7 +2702,7 @@ static struct deviceproptableu32 canon_eos_afmethod[] = {
 };
 GENERIC32TABLE(Canon_EOS_AFMethod,canon_eos_afmethod)
 
-static struct deviceproptableu16 canon_eos_evfrecordtarget[] = {
+static const struct deviceproptableu16 canon_eos_evfrecordtarget[] = {
 	{ N_("None"),		0, 0 },
 	{ N_("SDRAM"),		3, 0 },
 	{ N_("Card"),		4, 0 },
@@ -2710,14 +2710,14 @@ static struct deviceproptableu16 canon_eos_evfrecordtarget[] = {
 GENERIC16TABLE(Canon_EOS_EVFRecordTarget,canon_eos_evfrecordtarget)
 
 /* values currently unknown */
-static struct deviceproptableu16 canon_eos_evfmode[] = {
+static const struct deviceproptableu16 canon_eos_evfmode[] = {
 	{ "0",	0, 0 },
 	{ "1",	1, 0 },
 };
 GENERIC16TABLE(Canon_EOS_EVFMode,canon_eos_evfmode)
 
 #if 0 /* reimplement with viewfinder on/off below */
-static struct deviceproptableu8 canon_cameraoutput[] = {
+static const struct deviceproptableu8 canon_cameraoutput[] = {
 	{ N_("Undefined"),	0, 0 },
 	{ N_("LCD"),		1, 0 },
 	{ N_("Video OUT"), 	2, 0 },
@@ -2797,7 +2797,7 @@ _put_Canon_CameraOutput(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu16 canon_isospeed[] = {
+static const struct deviceproptableu16 canon_isospeed[] = {
 	{ N_("Factory Default"),0xffff, 0 },
 	{ "6",			0x0028, 0 },
 	{ "12",			0x0030, 0 },
@@ -2844,7 +2844,7 @@ static struct deviceproptableu16 canon_isospeed[] = {
 };
 GENERIC16TABLE(Canon_ISO,canon_isospeed)
 
-static struct deviceproptableu8 canon_eos_single_ImageFormats[] = {
+static const struct deviceproptableu8 canon_eos_single_ImageFormats[] = {
 	{ N_("RAW"),  0x0c, 0 },
 	{ N_("mRAW"), 0x1c, 0 },
 	{ N_("sRAW"), 0x2c, 0 },
@@ -2970,7 +2970,7 @@ _put_Canon_EOS_ImageFormat(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu16 canon_eos_aeb[] = {
+static const struct deviceproptableu16 canon_eos_aeb[] = {
 	{ N_("off"),		0x0000, 0 },
 	{ "+/- 1/3",		0x0003, 0 },
 	{ "+/- 1/2",		0x0004, 0 },
@@ -2987,7 +2987,7 @@ static struct deviceproptableu16 canon_eos_aeb[] = {
 };
 GENERIC16TABLE(Canon_EOS_AEB,canon_eos_aeb)
 
-static struct deviceproptableu16 canon_eos_drive_mode[] = {
+static const struct deviceproptableu16 canon_eos_drive_mode[] = {
 	{ N_("Single"),			0x0000, 0 },
 	{ N_("Continuous"),		0x0001, 0 },
 	{ N_("Video"),			0x0002, 0 },
@@ -3085,7 +3085,7 @@ _put_Olympus_OMD_Bulb(CONFIG_PUT_ARGS)
 	return GP_OK;
 }
 
-static struct deviceproptableu16 fuji_action[] = {
+static const struct deviceproptableu16 fuji_action[] = {
 	{ N_("Shoot"),			0x0304, 0 },
 	{ N_("Bulb On"),		0x0500, 0 },
 	{ N_("Bulb Off"),		0x000c, 0 },
@@ -3691,7 +3691,7 @@ _put_FNumber(CONFIG_PUT_ARGS)
 }
 
 /* the common sony f-numbers */
-static int sony_fnumbers[] = {
+static const int sony_fnumbers[] = {
 	100,
 	110,
 	120,
@@ -4093,7 +4093,7 @@ _put_Sharpness(CONFIG_PUT_ARGS) {
 }
 
 
-static struct deviceproptableu16 exposure_program_modes[] = {
+static const struct deviceproptableu16 exposure_program_modes[] = {
 	{ "M",			0x0001, 0 },
 	{ "P",			0x0002, 0 },
 	{ "A",			0x0003, 0 },
@@ -4146,7 +4146,7 @@ static struct deviceproptableu16 exposure_program_modes[] = {
 };
 GENERIC16TABLE(ExposureProgram,exposure_program_modes)
 
-static struct deviceproptableu8 nikon_scenemode[] = {
+static const struct deviceproptableu8 nikon_scenemode[] = {
 	{ N_("Night landscape"),	0, 0 },
 	{ N_("Party/Indoor"),		1, 0 },
 	{ N_("Beach/Snow"),		2, 0 },
@@ -4169,7 +4169,7 @@ static struct deviceproptableu8 nikon_scenemode[] = {
 GENERIC8TABLE(NIKON_SceneMode,nikon_scenemode)
 
 /* Nikon 1 S1 specials in here */
-static struct deviceproptableu8 nikon_1_j3_iso[] = {
+static const struct deviceproptableu8 nikon_1_j3_iso[] = {
 	/* values from a J3 */
 	{ N_("A6400 (160-6400)"),	0x01, 0 },
 	{ N_("A3200 (160-3200)"),	0x02, 0 },
@@ -4214,7 +4214,7 @@ static struct deviceproptableu8 nikon_1_j3_iso[] = {
 GENERIC8TABLE(Nikon_1_J3_ISO,nikon_1_j3_iso)
 
 /* Nikon 1 S1 specials in here */
-static struct deviceproptableu8 nikon_1_s1_iso[] = {
+static const struct deviceproptableu8 nikon_1_s1_iso[] = {
 	{ "100",	0x0a, 0 },
 	{ "110",	0x0b, 0 },
 	{ "125",	0x0c, 0 },
@@ -4251,7 +4251,7 @@ static struct deviceproptableu8 nikon_1_s1_iso[] = {
 GENERIC8TABLE(Nikon_1_S1_ISO,nikon_1_s1_iso)
 
 /* Generic Nikon 1 ISO */
-static struct deviceproptableu8 nikon_1_iso[] = {
+static const struct deviceproptableu8 nikon_1_iso[] = {
 	{ "ISO Auto 6400",	0x01, 0 },
 	{ "ISO Auto 3200",	0x02, 0 },
 	{ "ISO Auto 800",	0x03, 0 },
@@ -4289,7 +4289,7 @@ static struct deviceproptableu8 nikon_1_iso[] = {
 };
 GENERIC8TABLE(Nikon_1_ISO,nikon_1_iso)
 
-static struct deviceproptableu8 nikon_1_whitebalance[] = {
+static const struct deviceproptableu8 nikon_1_whitebalance[] = {
 	/* values from a J3 */
 	{ N_("Auto"),			0x00, 0 },
 	{ N_("Tungsten"),		0x01, 0 },
@@ -4305,7 +4305,7 @@ static struct deviceproptableu8 nikon_1_whitebalance[] = {
 };
 GENERIC8TABLE(Nikon_1_WhiteBalance,nikon_1_whitebalance)
 
-static struct deviceproptableu8 nikon_hdrhighdynamic[] = {
+static const struct deviceproptableu8 nikon_hdrhighdynamic[] = {
 	{ N_("Auto"),	0, 0 },
 	{ N_("1 EV"),	1, 0 },
 	{ N_("2 EV"),	2, 0 },
@@ -4313,7 +4313,7 @@ static struct deviceproptableu8 nikon_hdrhighdynamic[] = {
 };
 GENERIC8TABLE(Nikon_HDRHighDynamic,nikon_hdrhighdynamic)
 
-static struct deviceproptableu8 nikon_aebracketstep[] = {
+static const struct deviceproptableu8 nikon_aebracketstep[] = {
 	{ N_("1/3 EV"),	0, 0 },
 	{ N_("1/2 EV"),	1, 0 },
 	{ N_("2/3 EV"),	2, 0 },
@@ -4323,14 +4323,14 @@ static struct deviceproptableu8 nikon_aebracketstep[] = {
 };
 GENERIC8TABLE(Nikon_AEBracketStep,nikon_aebracketstep)
 
-static struct deviceproptableu8 nikon_wbbracketstep[] = {
+static const struct deviceproptableu8 nikon_wbbracketstep[] = {
 	{ N_("1 EV"),	0, 0 },
 	{ N_("2 EV"),	1, 0 },
 	{ N_("3 EV"),	2, 0 },
 };
 GENERIC8TABLE(Nikon_WBBracketStep,nikon_wbbracketstep)
 
-static struct deviceproptableu8 nikon_adlbracketstep[] = {
+static const struct deviceproptableu8 nikon_adlbracketstep[] = {
 	{ N_("Auto"),		0, 0 },
 	{ N_("Low"),		1, 0 },
 	{ N_("Normal"),		2, 0 },
@@ -4339,7 +4339,7 @@ static struct deviceproptableu8 nikon_adlbracketstep[] = {
 };
 GENERIC8TABLE(Nikon_ADLBracketStep,nikon_adlbracketstep)
 
-static struct deviceproptableu8 nikon_bracketpattern[] = {
+static const struct deviceproptableu8 nikon_bracketpattern[] = {
 	{ N_("2 images (normal and under)"),			0, 0 },
 	{ N_("2 images (normal and over)"),			1, 0 },
 	{ N_("3 images (normal and 2 unders)"),			2, 0 },
@@ -4352,7 +4352,7 @@ static struct deviceproptableu8 nikon_bracketpattern[] = {
 };
 GENERIC8TABLE(Nikon_BracketPattern,nikon_bracketpattern)
 
-static struct deviceproptableu8 nikon_adlbracketpattern[] = {
+static const struct deviceproptableu8 nikon_adlbracketpattern[] = {
 	{ N_("2 shots (Off -> User setting)"),				0, 0 },
 	{ N_("3 shots (Off -> Low -> User setting)"),			1, 0 },
 	{ N_("4 shots (Off -> Low -> Normal -> High)"),			2, 0 },
@@ -4361,7 +4361,7 @@ static struct deviceproptableu8 nikon_adlbracketpattern[] = {
 };
 GENERIC8TABLE(Nikon_ADLBracketPattern,nikon_adlbracketpattern)
 
-static struct deviceproptableu8 nikon_hdrsmoothing[] = {
+static const struct deviceproptableu8 nikon_hdrsmoothing[] = {
 	{ N_("Auto"),		3, 0 },
 	{ N_("Low"),		2, 0 },
 	{ N_("Normal"),		1, 0 },
@@ -4370,7 +4370,7 @@ static struct deviceproptableu8 nikon_hdrsmoothing[] = {
 };
 GENERIC8TABLE(Nikon_HDRSmoothing,nikon_hdrsmoothing)
 
-static struct deviceproptableu16 nikon_d7100_exposure_program_modes[] = {
+static const struct deviceproptableu16 nikon_d7100_exposure_program_modes[] = {
 	{ "M",			0x0001, 0 },
 	{ "P",			0x0002, 0 },
 	{ "A",			0x0003, 0 },
@@ -4389,7 +4389,7 @@ static struct deviceproptableu16 nikon_d7100_exposure_program_modes[] = {
 };
 GENERIC16TABLE(NIKON_D7100_ExposureProgram,nikon_d7100_exposure_program_modes)
 
-static struct deviceproptableu16 nikon_d5100_exposure_program_modes[] = {
+static const struct deviceproptableu16 nikon_d5100_exposure_program_modes[] = {
 	{ "M",			0x0001, 0 },
 	{ "P",			0x0002, 0 },
 	{ "A",			0x0003, 0 },
@@ -4406,7 +4406,7 @@ static struct deviceproptableu16 nikon_d5100_exposure_program_modes[] = {
 };
 GENERIC16TABLE(NIKON_D5100_ExposureProgram,nikon_d5100_exposure_program_modes)
 
-static struct deviceproptableu8 nikon_1_exposure_program_modes[] = {
+static const struct deviceproptableu8 nikon_1_exposure_program_modes[] = {
 	{ "P",			0x00, 0 },
 	{ "S",			0x01, 0 },
 	{ "A",			0x02, 0 },
@@ -4422,7 +4422,7 @@ static struct deviceproptableu8 nikon_1_exposure_program_modes[] = {
 GENERIC8TABLE(NIKON_1_ExposureProgram,nikon_1_exposure_program_modes)
 
 /* from z6 sdk */
-static struct deviceproptableu8 nikon_usermode[] = {
+static const struct deviceproptableu8 nikon_usermode[] = {
 	{ "P",			19, 0 },
 	{ "S",			20, 0 },
 	{ "A",			21, 0 },
@@ -4431,7 +4431,7 @@ static struct deviceproptableu8 nikon_usermode[] = {
 };
 GENERIC8TABLE(NIKON_UserMode,nikon_usermode)
 
-static struct deviceproptableu16 capture_mode[] = {
+static const struct deviceproptableu16 capture_mode[] = {
 	{ N_("Single Shot"),		0x0001, 0 },
 	{ N_("Burst"),			0x0002, 0 },
 	{ N_("Timelapse"),		0x0003, 0 },
@@ -4513,7 +4513,7 @@ static struct deviceproptableu16 capture_mode[] = {
 };
 GENERIC16TABLE(CaptureMode,capture_mode)
 
-static struct deviceproptableu16 focus_metering[] = {
+static const struct deviceproptableu16 focus_metering[] = {
 	{ N_("Centre-spot"),	0x0001, 0 },
 	{ N_("Multi-spot"),	0x0002, 0 },
 	{ N_("Single Area"),	0x8010, PTP_VENDOR_NIKON},
@@ -4526,7 +4526,7 @@ static struct deviceproptableu16 focus_metering[] = {
 };
 GENERIC16TABLE(FocusMetering,focus_metering)
 
-static struct deviceproptableu16 nikon_d7100_focus_metering[] = {
+static const struct deviceproptableu16 nikon_d7100_focus_metering[] = {
 	{ N_("Auto"),0x8011, PTP_VENDOR_NIKON},
 	{ N_("Single Area"),	0x8010, PTP_VENDOR_NIKON},
 	{ N_("Dynamic Area (9)"),	0x0002, 0 },
@@ -4536,7 +4536,7 @@ static struct deviceproptableu16 nikon_d7100_focus_metering[] = {
 };
 GENERIC16TABLE(Nikon_D7100_FocusMetering,nikon_d7100_focus_metering)
 
-static struct deviceproptableu16 nikon_d850_focus_metering[] = {
+static const struct deviceproptableu16 nikon_d850_focus_metering[] = {
 	{ N_("Dynamic-area AF (25 points)"),0x0002, 	PTP_VENDOR_NIKON},
 	{ N_("Single-point AF"),			0x8010, PTP_VENDOR_NIKON},
 	{ N_("Auto-area AF"),				0x8011, PTP_VENDOR_NIKON},
@@ -4554,32 +4554,32 @@ static struct deviceproptableu16 nikon_d850_focus_metering[] = {
 };
 GENERIC16TABLE(Nikon_D850_FocusMetering,nikon_d850_focus_metering)
 
-static struct deviceproptableu8 nikon_colormodel[] = {
+static const struct deviceproptableu8 nikon_colormodel[] = {
 	{ N_("sRGB (portrait)"),0x00, 0 },
 	{ N_("AdobeRGB"),	0x01, 0 },
 	{ N_("sRGB (nature)"),	0x02, 0 },
 };
 GENERIC8TABLE(Nikon_ColorModel,nikon_colormodel)
 
-static struct deviceproptableu8 nikon_colorspace[] = {
+static const struct deviceproptableu8 nikon_colorspace[] = {
 	{ N_("sRGB"),		0x00, 0 },
 	{ N_("AdobeRGB"),	0x01, 0 },
 };
 GENERIC8TABLE(Nikon_ColorSpace,nikon_colorspace)
 
-static struct deviceproptableu16 canon_eos_colorspace[] = {
+static const struct deviceproptableu16 canon_eos_colorspace[] = {
 	{ N_("sRGB"), 		0x01, 0 },
 	{ N_("AdobeRGB"),	0x02, 0 },
 };
 GENERIC16TABLE(Canon_EOS_ColorSpace,canon_eos_colorspace)
 
-static struct deviceproptableu8 nikon_evstep[] = {
+static const struct deviceproptableu8 nikon_evstep[] = {
 	{ "1/3",	0, 0 },
 	{ "1/2",	1, 0 },
 };
 GENERIC8TABLE(Nikon_EVStep,nikon_evstep)
 
-static struct deviceproptableu8 nikon_orientation[] = {
+static const struct deviceproptableu8 nikon_orientation[] = {
 	{ "0'",		0, 0 },
 	{ "270'",	1, 0 },
 	{ "90'",	2, 0 },
@@ -4587,7 +4587,7 @@ static struct deviceproptableu8 nikon_orientation[] = {
 };
 GENERIC8TABLE(Nikon_CameraOrientation,nikon_orientation)
 
-static struct deviceproptableu16 canon_orientation[] = {
+static const struct deviceproptableu16 canon_orientation[] = {
 	{ "0'",		0, 0 },
 	{ "90'",	1, 0 },
 	{ "180'",	2, 0 },
@@ -4628,7 +4628,7 @@ _get_Nikon_AngleLevel(CONFIG_GET_ARGS) {
 }
 
 
-static struct deviceproptableu8 nikon_afsensor[] = {
+static const struct deviceproptableu8 nikon_afsensor[] = {
 	{ N_("Centre"),	0x00, 0 },
 	{ N_("Top"),	0x01, 0 },
 	{ N_("Bottom"),	0x02, 0 },
@@ -4655,7 +4655,7 @@ static struct deviceproptableu16 sony_focusarea[] = {
 };
 GENERIC16TABLE(Sony_FocusArea,sony_focusarea)
 
-static struct deviceproptableu16 exposure_metering[] = {
+static const struct deviceproptableu16 exposure_metering[] = {
 	{ N_("Average"),	0x0001, 0 },
 	{ N_("Center Weighted"),0x0002, 0 },
 	{ N_("Multi Spot"),	0x0003, 0 },
@@ -4674,7 +4674,7 @@ static struct deviceproptableu16 exposure_metering[] = {
 };
 GENERIC16TABLE(ExposureMetering,exposure_metering)
 
-static struct deviceproptableu16 flash_mode[] = {
+static const struct deviceproptableu16 flash_mode[] = {
 	{ N_("Automatic Flash"),		0x0001, 0 },
 	{ N_("Flash off"),			0x0002, 0 },
 	{ N_("Fill flash"),			0x0003, 0 },
@@ -4704,14 +4704,14 @@ static struct deviceproptableu16 flash_mode[] = {
 };
 GENERIC16TABLE(FlashMode,flash_mode)
 
-static struct deviceproptableu16 effect_modes[] = {
+static const struct deviceproptableu16 effect_modes[] = {
 	{ N_("Standard"),	0x0001, 0 },
 	{ N_("Black & White"),	0x0002, 0 },
 	{ N_("Sepia"),		0x0003, 0 },
 };
 GENERIC16TABLE(EffectMode,effect_modes)
 
-static struct deviceproptableu8 nikon_effect_modes[] = {
+static const struct deviceproptableu8 nikon_effect_modes[] = {
 	{ N_("Night Vision"),		0x00, 0 },
 	{ N_("Color sketch"),		0x01, 0 },
 	{ N_("Miniature effect"),	0x02, 0 },
@@ -5181,7 +5181,7 @@ _put_Ricoh_ShutterSpeed(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-struct sigma_aperture {
+static const struct sigma_aperture {
 	uint8_t		numval;
 	const char*	val;
 } sigma_apertures[] = {
@@ -5302,7 +5302,7 @@ _put_SigmaFP_Aperture(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-struct sigma_shutterspeed {
+static const struct sigma_shutterspeed {
 	uint8_t		numval;
 	const char*	val;
 } sigma_shutterspeeds[] = {
@@ -5448,7 +5448,7 @@ _put_SigmaFP_ShutterSpeed(CONFIG_PUT_ARGS) {
 }
 
 /* This list is taken from Sony A58... fill in more if your Sony has more */
-static struct sonyshutter {
+static const struct sonyshutter {
 	int dividend, divisor;
 } sony_shuttertable[] = {
 	{30,1},
@@ -5958,7 +5958,7 @@ _put_Canon_EOS_WBAdjust(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu8 nikon_liveviewaf[] = {
+static const struct deviceproptableu8 nikon_liveviewaf[] = {
 	{ N_("Face-priority AF"),	0, 0 },
 	{ N_("Wide-area AF"),		1, 0 },
 	{ N_("Normal-area AF"),		2, 0 },
@@ -5968,7 +5968,7 @@ static struct deviceproptableu8 nikon_liveviewaf[] = {
 GENERIC8TABLE(Nikon_LiveViewAFU,nikon_liveviewaf)
 
 /* varies between nikons */
-static struct deviceproptableu8 nikon_liveviewimagezoomratio[] = {
+static const struct deviceproptableu8 nikon_liveviewimagezoomratio[] = {
 	{ N_("Entire Display"),	0, 0 },
 	{ N_("25%"),		2, 0 },
 	{ N_("50%"),		4, 0 },
@@ -5978,7 +5978,7 @@ static struct deviceproptableu8 nikon_liveviewimagezoomratio[] = {
 GENERIC8TABLE(Nikon_LiveViewImageZoomRatio,nikon_liveviewimagezoomratio)
 
 /* varies between nikons */
-static struct deviceproptableu8 nikon_liveviewimagezoomratio_d5000[] = {
+static const struct deviceproptableu8 nikon_liveviewimagezoomratio_d5000[] = {
 	{ N_("Entire Display"),	0, 0 },
 	{ N_("25%"),		1, 0 },
 	{ N_("33%"),		2, 0 },
@@ -5988,7 +5988,7 @@ static struct deviceproptableu8 nikon_liveviewimagezoomratio_d5000[] = {
 };
 GENERIC8TABLE(Nikon_LiveViewImageZoomRatio_D5000,nikon_liveviewimagezoomratio_d5000)
 
-static struct deviceproptablei8 nikon_liveviewafi[] = {
+static const struct deviceproptablei8 nikon_liveviewafi[] = {
 	{ N_("Face-priority AF"),	0, 0 },
 	{ N_("Wide-area AF"),		1, 0 },
 	{ N_("Normal-area AF"),		2, 0 },
@@ -5997,7 +5997,7 @@ static struct deviceproptablei8 nikon_liveviewafi[] = {
 };
 GENERICI8TABLE(Nikon_LiveViewAFI,nikon_liveviewafi)
 
-static struct deviceproptableu8 nikon_liveviewaffocus[] = {
+static const struct deviceproptableu8 nikon_liveviewaffocus[] = {
 	{ N_("Single-servo AF"),		0, 0 },
 	{ N_("Continuous-servo AF"),		1, 0 },
 	{ N_("Full-time-servo AF"),		2, 0 },
@@ -6006,7 +6006,7 @@ static struct deviceproptableu8 nikon_liveviewaffocus[] = {
 };
 GENERIC8TABLE(Nikon_LiveViewAFFocus,nikon_liveviewaffocus)
 
-static struct deviceproptableu8 nikon_afareaillum[] = {
+static const struct deviceproptableu8 nikon_afareaillum[] = {
 	{ N_("Auto"),		0, 0 },
 	{ N_("Off"),		1, 0 },
 	{ N_("On"),		2, 0 },
@@ -6014,7 +6014,7 @@ static struct deviceproptableu8 nikon_afareaillum[] = {
 GENERIC8TABLE(Nikon_AFAreaIllum,nikon_afareaillum)
 
 
-static struct deviceproptableu8 nikon_aelaflmode[] = {
+static const struct deviceproptableu8 nikon_aelaflmode[] = {
 	{ N_("AE/AF Lock"),	0x00, 0 },
 	{ N_("AE Lock only"),	0x01, 0 },
 	{ N_("AF Lock Only"),	0x02, 0 },
@@ -6024,7 +6024,7 @@ static struct deviceproptableu8 nikon_aelaflmode[] = {
 };
 GENERIC8TABLE(Nikon_AELAFLMode,nikon_aelaflmode)
 
-static struct deviceproptableu8 nikon_lcdofftime[] = {
+static const struct deviceproptableu8 nikon_lcdofftime[] = {
 	{ N_("10 seconds"),	0x00, 0 },
 	{ N_("20 seconds"),	0x01, 0 },
 	{ N_("1 minute"),	0x02, 0 },
@@ -6034,13 +6034,13 @@ static struct deviceproptableu8 nikon_lcdofftime[] = {
 };
 GENERIC8TABLE(Nikon_LCDOffTime,nikon_lcdofftime)
 
-static struct deviceproptableu8 nikon_recordingmedia[] = {
+static const struct deviceproptableu8 nikon_recordingmedia[] = {
 	{ N_("Card"),		0x00, 0 },
 	{ N_("SDRAM"),		0x01, 0 },
 };
 GENERIC8TABLE(Nikon_RecordingMedia,nikon_recordingmedia)
 
-static struct deviceproptableu8 nikon_selftimerdelay[] = {
+static const struct deviceproptableu8 nikon_selftimerdelay[] = {
 	{ N_("2 seconds"),	0x00, 0 },
 	{ N_("5 seconds"),	0x01, 0 },
 	{ N_("10 seconds"),	0x02, 0 },
@@ -6048,7 +6048,7 @@ static struct deviceproptableu8 nikon_selftimerdelay[] = {
 };
 GENERIC8TABLE(Nikon_SelfTimerDelay,nikon_selftimerdelay)
 
-static struct deviceproptableu8 nikon_centerweight[] = {
+static const struct deviceproptableu8 nikon_centerweight[] = {
 	{ N_("6 mm"),	0x00, 0 },
 	{ N_("8 mm"),	0x01, 0 },
 	{ N_("10 mm"),	0x02, 0 },
@@ -6057,7 +6057,7 @@ static struct deviceproptableu8 nikon_centerweight[] = {
 };
 GENERIC8TABLE(Nikon_CenterWeight,nikon_centerweight)
 
-static struct deviceproptableu8 nikon_d850_centerweight[] = {
+static const struct deviceproptableu8 nikon_d850_centerweight[] = {
 	{ N_("8 mm"),	0x00, 0 },
 	{ N_("12 mm"),	0x01, 0 },
 	{ N_("15 mm"),	0x02, 0 },
@@ -6066,7 +6066,7 @@ static struct deviceproptableu8 nikon_d850_centerweight[] = {
 };
 GENERIC8TABLE(Nikon_D850_CenterWeight,nikon_d850_centerweight)
 
-static struct deviceproptableu8 nikon_flashshutterspeed[] = {
+static const struct deviceproptableu8 nikon_flashshutterspeed[] = {
 	{ N_("1/60"),	0x00, 0 },
 	{ N_("1/30"),	0x01, 0 },
 	{ N_("1/15"),	0x02, 0 },
@@ -6082,7 +6082,7 @@ static struct deviceproptableu8 nikon_flashshutterspeed[] = {
 };
 GENERIC8TABLE(Nikon_FlashShutterSpeed,nikon_flashshutterspeed)
 
-static struct deviceproptablei16 fuji_shutterspeed[] = {
+static const struct deviceproptablei16 fuji_shutterspeed[] = {
 	{ N_("bulb"),	-31, 0 },
 	{ N_("30s"),	-30, 0 },
 	{ N_("25s"),	-28, 0 },
@@ -6143,7 +6143,7 @@ static struct deviceproptablei16 fuji_shutterspeed[] = {
 };
 GENERICI16TABLE(Fuji_ShutterSpeed,fuji_shutterspeed)
 
-static struct deviceproptableu32 fuji_new_shutterspeed[] = {
+static const struct deviceproptableu32 fuji_new_shutterspeed[] = {
 	{ N_("bulb"),	0xffffffff, 0 },
 	{ "60m",	64000180, 0 },
 	{ "30m",	64000150, 0 },
@@ -6218,7 +6218,7 @@ static struct deviceproptableu32 fuji_new_shutterspeed[] = {
 };
 GENERIC32TABLE(Fuji_New_ShutterSpeed,fuji_new_shutterspeed)
 
-static struct deviceproptableu8 nikon_remotetimeout[] = {
+static const struct deviceproptableu8 nikon_remotetimeout[] = {
 	{ N_("1 minute"),	0x00,	0 },
 	{ N_("5 minutes"),	0x01,	0 },
 	{ N_("10 minutes"),	0x02,	0 },
@@ -6226,7 +6226,7 @@ static struct deviceproptableu8 nikon_remotetimeout[] = {
 };
 GENERIC8TABLE(Nikon_RemoteTimeout,nikon_remotetimeout)
 
-static struct deviceproptableu8 nikon_optimizeimage[] = {
+static const struct deviceproptableu8 nikon_optimizeimage[] = {
 	{ N_("Normal"),		0x00,	0 },
 	{ N_("Vivid"),		0x01,	0 },
 	{ N_("Sharper"),	0x02, 0 },
@@ -6238,7 +6238,7 @@ static struct deviceproptableu8 nikon_optimizeimage[] = {
 };
 GENERIC8TABLE(Nikon_OptimizeImage,nikon_optimizeimage)
 
-static struct deviceproptableu8 nikon_sharpening[] = {
+static const struct deviceproptableu8 nikon_sharpening[] = {
 	{ N_("Auto"),		0x00, 0 },
 	{ N_("Normal"),		0x01, 0 },
 	{ N_("Low"),		0x02, 0 },
@@ -6249,7 +6249,7 @@ static struct deviceproptableu8 nikon_sharpening[] = {
 };
 GENERIC8TABLE(Nikon_Sharpening,nikon_sharpening)
 
-static struct deviceproptableu8 nikon_tonecompensation[] = {
+static const struct deviceproptableu8 nikon_tonecompensation[] = {
 	{ N_("Auto"),		0x00, 0 },
 	{ N_("Normal"),		0x01, 0 },
 	{ N_("Low contrast"),	0x02, 0 },
@@ -6260,7 +6260,7 @@ static struct deviceproptableu8 nikon_tonecompensation[] = {
 };
 GENERIC8TABLE(Nikon_ToneCompensation,nikon_tonecompensation)
 
-static struct deviceproptableu8 canon_afdistance[] = {
+static const struct deviceproptableu8 canon_afdistance[] = {
 	{ N_("Manual"),			0x00, 0 },
 	{ N_("Auto"),			0x01, 0 },
 	{ N_("Unknown"),		0x02, 0 },
@@ -6278,7 +6278,7 @@ GENERIC8TABLE(Canon_AFDistance,canon_afdistance)
 
 
 /* Focus Modes as per PTP standard. |0x8000 means vendor specific. */
-static struct deviceproptableu16 focusmodes[] = {
+static const struct deviceproptableu16 focusmodes[] = {
 	{ N_("Undefined"),	0x0000, 0 },
 	{ N_("Manual"),		0x0001, 0 },
 	{ N_("Automatic"),	0x0002, 0 },
@@ -6332,7 +6332,7 @@ _put_Sony_FocusMode(CONFIG_PUT_ARGS) {
 }
 
 
-static struct deviceproptableu32 eos_focusmodes[] = {
+static const struct deviceproptableu32 eos_focusmodes[] = {
 	{ N_("One Shot"),	0x0000, 0 },
 	{ N_("AI Servo"),	0x0001, 0 },
 	{ N_("AI Focus"),	0x0002, 0 },
@@ -6340,7 +6340,7 @@ static struct deviceproptableu32 eos_focusmodes[] = {
 };
 GENERIC32TABLE(Canon_EOS_FocusMode,eos_focusmodes)
 
-static struct deviceproptableu16 eos_quickreviewtime[] = {
+static const struct deviceproptableu16 eos_quickreviewtime[] = {
 	{ N_("None"),		0x0000, 0 },
 	{ N_("2 seconds"),	0x0002, 0 },
 	{ N_("4 seconds"),	0x0004, 0 },
@@ -6350,7 +6350,7 @@ static struct deviceproptableu16 eos_quickreviewtime[] = {
 GENERIC16TABLE(Canon_EOS_QuickReviewTime,eos_quickreviewtime)
 
 
-static struct deviceproptableu8 canon_whitebalance[] = {
+static const struct deviceproptableu8 canon_whitebalance[] = {
 	{ N_("Auto"),			0, 0 },
 	{ N_("Daylight"),		1, 0 },
 	{ N_("Cloudy"),			2, 0 },
@@ -6368,7 +6368,7 @@ static struct deviceproptableu8 canon_whitebalance[] = {
 GENERIC8TABLE(Canon_WhiteBalance,canon_whitebalance)
 
 /* check against SDK */
-static struct deviceproptableu8 canon_eos_whitebalance[] = {
+static const struct deviceproptableu8 canon_eos_whitebalance[] = {
 	{ N_("Auto"),		0, 0 },
 	{ N_("Daylight"),	1, 0 },
 	{ N_("Cloudy"),		2, 0 },
@@ -6393,7 +6393,7 @@ static struct deviceproptableu8 canon_eos_whitebalance[] = {
 GENERIC8TABLE(Canon_EOS_WhiteBalance,canon_eos_whitebalance)
 
 
-static struct deviceproptableu8 canon_expcompensation[] = {
+static const struct deviceproptableu8 canon_expcompensation[] = {
 	{ N_("Factory Default"),0xff, 0 },
 	{ "+3",			0x00, 0 },
 	{ "+2 2/3",		0x03, 0 },
@@ -6423,7 +6423,7 @@ static struct deviceproptableu8 canon_expcompensation[] = {
 };
 GENERIC8TABLE(Canon_ExpCompensation,canon_expcompensation)
 
-static struct deviceproptableu8 canon_expcompensation2[] = {
+static const struct deviceproptableu8 canon_expcompensation2[] = {
 	{ "5",		0x28, 0 },
 	{ "4.6",	0x25, 0 },
 	{ "4.5",	0x24, 0 },
@@ -6471,7 +6471,7 @@ static struct deviceproptableu8 canon_expcompensation2[] = {
 GENERIC8TABLE(Canon_ExpCompensation2,canon_expcompensation2)
 
 
-static struct deviceproptableu16 canon_photoeffect[] = {
+static const struct deviceproptableu16 canon_photoeffect[] = {
 	{ N_("Off"),		0, 0 },
 	{ N_("Vivid"),		1, 0 },
 	{ N_("Neutral"),	2, 0 },
@@ -6483,7 +6483,7 @@ GENERIC16TABLE(Canon_PhotoEffect,canon_photoeffect)
 
 
 /* FIXME: actually uint32 in SDK doc? also non-standard type in debuglogs */
-static struct deviceproptableu16 canon_bracketmode[] = {
+static const struct deviceproptableu16 canon_bracketmode[] = {
 	{ N_("AE bracket"),	1, 0 },
 	{ N_("ISO bracket"),	2, 0 },
 	{ N_("WB bracket"),	4, 0 },
@@ -6492,7 +6492,7 @@ static struct deviceproptableu16 canon_bracketmode[] = {
 };
 GENERIC16TABLE(Canon_BracketMode,canon_bracketmode)
 
-static struct deviceproptableu16 canon_aperture[] = {
+static const struct deviceproptableu16 canon_aperture[] = {
 	{ N_("implicit auto"),	0x0, 0 },
 	{ N_("auto"),	0xffff, 0 },
 	{ N_("auto"),	0x00b0, 0 },
@@ -6552,7 +6552,7 @@ static struct deviceproptableu16 canon_aperture[] = {
 };
 GENERIC16TABLE(Canon_Aperture,canon_aperture)
 
-static struct deviceproptableu16 fuji_aperture[] = {
+static const struct deviceproptableu16 fuji_aperture[] = {
 	{ "1.8",	10, 0 },
 	{ "2",		12, 0 },
 	{ "2.2",	14, 0 },
@@ -6584,7 +6584,7 @@ static struct deviceproptableu16 fuji_aperture[] = {
 GENERIC16TABLE(Fuji_Aperture,fuji_aperture)
 
 /* The j5 only reports some of those, there is no clear pattern... fill in with more 1 series */
-static struct deviceproptableu8 nikon_1_aperture[] = {
+static const struct deviceproptableu8 nikon_1_aperture[] = {
 	/* 1 */
 	/* 1.1 */
 	/* 1.2 */
@@ -6645,7 +6645,7 @@ static struct deviceproptableu8 nikon_1_aperture[] = {
 GENERIC8TABLE(Nikon_1_Aperture,nikon_1_aperture)
 
 /* The j5 only reports some of those, there is no clear pattern... fill in with more 1 series */
-static struct deviceproptablei8 nikon_1_shutterspeedi[] = {
+static const struct deviceproptablei8 nikon_1_shutterspeedi[] = {
 	{ "Bulb",	-31, 0 },
 	{ "30",		-30, 0 },
 	{ "25",		-28, 0 },
@@ -6733,7 +6733,7 @@ _put_Nikon_1_ShutterSpeedU(CONFIG_PUT_ARGS) {
 	return _put_Nikon_1_ShutterSpeedI(CONFIG_PUT_NAMES);
 }
 
-static struct deviceproptableu8 nikon_bracketset[] = {
+static const struct deviceproptableu8 nikon_bracketset[] = {
 	{ N_("AE & Flash"),	0, 0 },
 	{ N_("AE only"),	1, 0 },
 	{ N_("Flash only"),	2, 0 },
@@ -6742,7 +6742,7 @@ static struct deviceproptableu8 nikon_bracketset[] = {
 };
 GENERIC8TABLE(Nikon_BracketSet,nikon_bracketset)
 
-static struct deviceproptableu8 nikon_cleansensor[] = {
+static const struct deviceproptableu8 nikon_cleansensor[] = {
 	{ N_("Off"),			0, 0 },
 	{ N_("Startup"),		1, 0 },
 	{ N_("Shutdown"),		2, 0 },
@@ -6750,27 +6750,27 @@ static struct deviceproptableu8 nikon_cleansensor[] = {
 };
 GENERIC8TABLE(Nikon_CleanSensor,nikon_cleansensor)
 
-static struct deviceproptableu8 nikon_flickerreduction[] = {
+static const struct deviceproptableu8 nikon_flickerreduction[] = {
 	{ N_("50 Hz"),			0, 0 },
 	{ N_("60 Hz"),			1, 0 },
 	{ N_("Auto"),			2, 0 },
 };
 GENERIC8TABLE(Nikon_FlickerReduction,nikon_flickerreduction)
 
-static struct deviceproptableu8 nikon_remotemode[] = {
+static const struct deviceproptableu8 nikon_remotemode[] = {
 	{ N_("Delayed Remote"),			0, 0 },
 	{ N_("Quick Response"),			1, 0 },
 	{ N_("Remote Mirror Up"),		2, 0 },
 };
 GENERIC8TABLE(Nikon_RemoteMode,nikon_remotemode)
 
-static struct deviceproptableu8 nikon_applicationmode[] = {
+static const struct deviceproptableu8 nikon_applicationmode[] = {
 	{ N_("Application Mode 0"),			0, 0 },
 	{ N_("Application Mode 1"),			1, 0 },
 };
 GENERIC8TABLE(Nikon_ApplicationMode,nikon_applicationmode)
 
-static struct deviceproptableu8 nikon_saturation[] = {
+static const struct deviceproptableu8 nikon_saturation[] = {
 	{ N_("Normal"),		0, 0 },
 	{ N_("Moderate"),	1, 0 },
 	{ N_("Enhanced"),	2, 0 },
@@ -6778,14 +6778,14 @@ static struct deviceproptableu8 nikon_saturation[] = {
 GENERIC8TABLE(Nikon_Saturation,nikon_saturation)
 
 
-static struct deviceproptableu8 nikon_bracketorder[] = {
+static const struct deviceproptableu8 nikon_bracketorder[] = {
 	{ N_("MTR > Under"),	0, 0 },
 	{ N_("Under > MTR"),	1, 0 },
 };
 GENERIC8TABLE(Nikon_BracketOrder,nikon_bracketorder)
 
 /* There is a table for it in the internet */
-static struct deviceproptableu8 nikon_lensid[] = {
+static const struct deviceproptableu8 nikon_lensid[] = {
 	{N_("Unknown"),	0, 0},
 	{"Sigma 70-300mm 1:4-5.6 D APO Macro",		38, 0},
 	{"AF Nikkor 80-200mm 1:2.8 D ED",		83, 0},
@@ -6799,7 +6799,7 @@ static struct deviceproptableu8 nikon_lensid[] = {
 };
 GENERIC8TABLE(Nikon_LensID,nikon_lensid) /* FIXME: seen UINT8 and UINT16 types now */
 
-static struct deviceproptableu8 nikon_microphone[] = {
+static const struct deviceproptableu8 nikon_microphone[] = {
 	{N_("Auto sensitivity"),	0, 0},
 	{N_("High sensitivity"),	1, 0},
 	{N_("Medium sensitivity"),	2, 0},
@@ -6808,14 +6808,14 @@ static struct deviceproptableu8 nikon_microphone[] = {
 };
 GENERIC8TABLE(Nikon_Microphone, nikon_microphone)
 
-static struct deviceproptableu8 nikon_moviequality[] = {
+static const struct deviceproptableu8 nikon_moviequality[] = {
 	{"320x216",	0, 0},
 	{"640x424",	1, 0},
 	{"1280x720",	2, 0},
 };
 GENERIC8TABLE(Nikon_MovieQuality, nikon_moviequality)
 
-static struct deviceproptableu8 nikon_d850_moviequality[] = {
+static const struct deviceproptableu8 nikon_d850_moviequality[] = {
 	{"3840x2160; 30p",	0, 0},
 	{"3840x2160; 25p",	1, 0},
 	{"3840x2160; 24p",	2, 0},
@@ -6835,7 +6835,7 @@ static struct deviceproptableu8 nikon_d850_moviequality[] = {
 };
 GENERIC8TABLE(Nikon_D850_MovieQuality, nikon_d850_moviequality)
 
-static struct deviceproptableu8 nikon_d5100_moviequality[] = {
+static const struct deviceproptableu8 nikon_d5100_moviequality[] = {
 	{"640x424; 25fps; normal",		0, 0},
 	{"640x424; 25fps; high quality",	1, 0},
 	{"1280x720; 24fps; normal",		2, 0},
@@ -6849,7 +6849,7 @@ static struct deviceproptableu8 nikon_d5100_moviequality[] = {
 };
 GENERIC8TABLE(Nikon_D5100_MovieQuality, nikon_d5100_moviequality)
 
-static struct deviceproptableu8 nikon_d7100_moviequality[] = {
+static const struct deviceproptableu8 nikon_d7100_moviequality[] = {
 	{"1920x1080; 60i",	0, 0},
 	{"1920x1080; 50i",	1, 0},
 	{"1920x1080; 30p",	2, 0},
@@ -6860,13 +6860,13 @@ static struct deviceproptableu8 nikon_d7100_moviequality[] = {
 };
 GENERIC8TABLE(Nikon_D7100_MovieQuality, nikon_d7100_moviequality)
 
-static struct deviceproptableu8 nikon_d7100_moviequality2[] = {
+static const struct deviceproptableu8 nikon_d7100_moviequality2[] = {
 	{"Norm",	0, 0},
 	{"High",	1, 0},
 };
 GENERIC8TABLE(Nikon_D7100_MovieQuality2, nikon_d7100_moviequality2)
 
-static struct deviceproptableu8 nikon_1_moviequality[] = {
+static const struct deviceproptableu8 nikon_1_moviequality[] = {
 	{"1080/60i",	0, 0},
 	{"1080/30p",	1, 0},
 	{"720/60p",	3, 0},
@@ -6874,7 +6874,7 @@ static struct deviceproptableu8 nikon_1_moviequality[] = {
 };
 GENERIC8TABLE(Nikon_1_MovieQuality, nikon_1_moviequality)
 
-static struct deviceproptableu8 nikon_d90_isoautohilimit[] = {
+static const struct deviceproptableu8 nikon_d90_isoautohilimit[] = {
 	{"400",		0, 0},
 	{"800",		1, 0},
 	{"1600",	2, 0},
@@ -6884,7 +6884,7 @@ static struct deviceproptableu8 nikon_d90_isoautohilimit[] = {
 };
 GENERIC8TABLE(Nikon_D90_ISOAutoHiLimit, nikon_d90_isoautohilimit)
 
-static struct deviceproptableu8 nikon_d7100_isoautohilimit[] = {
+static const struct deviceproptableu8 nikon_d7100_isoautohilimit[] = {
 	{ "200",    0,  0 },
 	{ "250",    1,  0 },
 	{ "280",    2,  0 },
@@ -6914,7 +6914,7 @@ static struct deviceproptableu8 nikon_d7100_isoautohilimit[] = {
 };
 GENERIC8TABLE(Nikon_D7100_ISOAutoHiLimit, nikon_d7100_isoautohilimit)
 
-static struct deviceproptableu8 nikon_manualbracketmode[] = {
+static const struct deviceproptableu8 nikon_manualbracketmode[] = {
 	{N_("Flash/speed"),	0, 0},
 	{N_("Flash/speed/aperture"),	1, 0},
 	{N_("Flash/aperture"),	2, 0},
@@ -6922,7 +6922,7 @@ static struct deviceproptableu8 nikon_manualbracketmode[] = {
 };
 GENERIC8TABLE(Nikon_ManualBracketMode, nikon_manualbracketmode)
 
-static struct deviceproptableu8 nikon_d3s_isoautohilimit[] = {
+static const struct deviceproptableu8 nikon_d3s_isoautohilimit[] = {
 	{"400",	   0, 0},
 	{"500",	   1, 0},
 	{"640",	   3, 0},
@@ -6948,7 +6948,7 @@ static struct deviceproptableu8 nikon_d3s_isoautohilimit[] = {
 GENERIC8TABLE(Nikon_D3s_ISOAutoHiLimit, nikon_d3s_isoautohilimit)
 
 #if 0
-static struct deviceproptableu8 nikon_d70s_padvpvalue[] = {
+static const struct deviceproptableu8 nikon_d70s_padvpvalue[] = {
 	{ "1/125",	0x00, 0 },
 	{ "1/60",	0x01, 0 },
 	{ "1/30",	0x02, 0 },
@@ -6966,7 +6966,7 @@ static struct deviceproptableu8 nikon_d70s_padvpvalue[] = {
 GENERIC8TABLE(Nikon_D70s_PADVPValue,nikon_d70s_padvpvalue)
 #endif
 
-static struct deviceproptableu8 nikon_d90_padvpvalue[] = {
+static const struct deviceproptableu8 nikon_d90_padvpvalue[] = {
 	{ "1/2000",	0x00, 0 },
 	{ "1/1600",	0x01, 0 },
 	{ "1/1250",	0x02, 0 },
@@ -6994,7 +6994,7 @@ static struct deviceproptableu8 nikon_d90_padvpvalue[] = {
 };
 GENERIC8TABLE(Nikon_D90_PADVPValue,nikon_d90_padvpvalue)
 
-static struct deviceproptableu8 nikon_d7100_padvpvalue[] = {
+static const struct deviceproptableu8 nikon_d7100_padvpvalue[] = {
 	{ "1/4000",	0x00, 0 },
 	{ "1/3200",	0x01, 0 },
 	{ "1/2500",	0x02, 0 },
@@ -7026,7 +7026,7 @@ static struct deviceproptableu8 nikon_d7100_padvpvalue[] = {
 };
 GENERIC8TABLE(Nikon_D7100_PADVPValue,nikon_d7100_padvpvalue)
 
-static struct deviceproptableu8 nikon_d3s_padvpvalue[] = {
+static const struct deviceproptableu8 nikon_d3s_padvpvalue[] = {
 	{ "1/4000",	0x00, 0 },
 	{ "1/3200",	0x01, 0 },
 	{ "1/2500",	0x02, 0 },
@@ -7057,7 +7057,7 @@ static struct deviceproptableu8 nikon_d3s_padvpvalue[] = {
 };
 GENERIC8TABLE(Nikon_D3s_PADVPValue,nikon_d3s_padvpvalue)
 
-static struct deviceproptableu8 nikon_z6_padvpvalue[] = {
+static const struct deviceproptableu8 nikon_z6_padvpvalue[] = {
 	{ "1/4000",	0x00, 0 },
 	{ "1/3200",	0x01, 0 },
 	{ "1/2500",	0x02, 0 },
@@ -7114,7 +7114,7 @@ static struct deviceproptableu8 nikon_z6_padvpvalue[] = {
 };
 GENERIC8TABLE(Nikon_Z6_PADVPValue,nikon_z6_padvpvalue)
 
-static struct deviceproptableu8 nikon_d90_activedlighting[] = {
+static const struct deviceproptableu8 nikon_d90_activedlighting[] = {
 	{ N_("Extra high"), 0x00,   0 },
 	{ N_("High"),       0x01,   0 },
 	{ N_("Normal"),     0x02,   0 },
@@ -7124,7 +7124,7 @@ static struct deviceproptableu8 nikon_d90_activedlighting[] = {
 };
 GENERIC8TABLE(Nikon_D90_ActiveDLighting,nikon_d90_activedlighting)
 
-static struct deviceproptablei8 nikon_d850_activedlighting[] = {
+static const struct deviceproptablei8 nikon_d850_activedlighting[] = {
 	{ N_("Auto"),		0x00,   0 },
 	{ N_("Off"),		0x01,   0 },
 	{ N_("Low"),		0x02,   0 },
@@ -7134,7 +7134,7 @@ static struct deviceproptablei8 nikon_d850_activedlighting[] = {
 };
 GENERICI8TABLE(Nikon_D850_ActiveDLighting,nikon_d850_activedlighting)
 
-static struct deviceproptableu8 nikon_1_compression[] = {
+static const struct deviceproptableu8 nikon_1_compression[] = {
 	{ N_("JPEG Normal"),	0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Fine"),	0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Basic"),	0x02, PTP_VENDOR_NIKON },
@@ -7144,7 +7144,7 @@ static struct deviceproptableu8 nikon_1_compression[] = {
 };
 GENERIC8TABLE(Nikon_1_Compression,nikon_1_compression)
 
-static struct deviceproptableu8 nikon_d90_compression[] = {
+static const struct deviceproptableu8 nikon_d90_compression[] = {
 	{ N_("JPEG Basic"),	0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"),	0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Fine"),	0x02, PTP_VENDOR_NIKON },
@@ -7155,7 +7155,7 @@ static struct deviceproptableu8 nikon_d90_compression[] = {
 };
 GENERIC8TABLE(Nikon_D90_Compression,nikon_d90_compression)
 
-static struct deviceproptableu8 nikon_d3s_compression[] = {
+static const struct deviceproptableu8 nikon_d3s_compression[] = {
 	{ N_("JPEG Basic"),	0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"),	0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Fine"),	0x02, PTP_VENDOR_NIKON },
@@ -7167,7 +7167,7 @@ static struct deviceproptableu8 nikon_d3s_compression[] = {
 };
 GENERIC8TABLE(Nikon_D3s_Compression,nikon_d3s_compression)
 
-static struct deviceproptableu8 nikon_d40_compression[] = {
+static const struct deviceproptableu8 nikon_d40_compression[] = {
 	{ N_("JPEG Basic"),  0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"), 0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Fine"),   0x02, PTP_VENDOR_NIKON },
@@ -7176,7 +7176,7 @@ static struct deviceproptableu8 nikon_d40_compression[] = {
 };
 GENERIC8TABLE(Nikon_D40_Compression,nikon_d40_compression)
 
-static struct deviceproptableu8 nikon_d850_compression[] = {
+static const struct deviceproptableu8 nikon_d850_compression[] = {
 	{ N_("JPEG Basic"),  0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Basic*"), 0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"), 0x02, PTP_VENDOR_NIKON },
@@ -7194,7 +7194,7 @@ static struct deviceproptableu8 nikon_d850_compression[] = {
 };
 GENERIC8TABLE(Nikon_D850_Compression,nikon_d850_compression)
 
-static struct deviceproptableu8 nikon_d7500_compression[] = {
+static const struct deviceproptableu8 nikon_d7500_compression[] = {
 	{ N_("JPEG Basic"),  0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Basic*"), 0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"), 0x02, PTP_VENDOR_NIKON },
@@ -7211,7 +7211,7 @@ static struct deviceproptableu8 nikon_d7500_compression[] = {
 };
 GENERIC8TABLE(Nikon_D7500_Compression,nikon_d7500_compression)
 
-static struct deviceproptableu8 compressionsetting[] = {
+static const struct deviceproptableu8 compressionsetting[] = {
 	{ N_("JPEG Basic"),	0x00, PTP_VENDOR_NIKON },
 	{ N_("JPEG Normal"),	0x01, PTP_VENDOR_NIKON },
 	{ N_("JPEG Fine"),	0x02, PTP_VENDOR_NIKON },
@@ -7257,7 +7257,7 @@ static struct deviceproptableu8 sony_300_jpegcompression[] = {
 };
 GENERIC8TABLE(Sony_300_JpegCompressionSetting,sony_300_jpegcompression)
 
-static struct deviceproptableu8 sony_qx_compression[] = {
+static const struct deviceproptableu8 sony_qx_compression[] = {
 	{ N_("Standard"),	0x02, 0 },
 	{ N_("Fine"),		0x03, 0 },
 	{ N_("Extra Fine"),	0x04, 0 },
@@ -7282,7 +7282,7 @@ static struct deviceproptableu8 sony_pc_save_image_format[] = {
 };
 GENERIC8TABLE(Sony_PcSaveImageFormat, sony_pc_save_image_format)
 
-static struct deviceproptableu8 sony_sensorcrop[] = {
+static const struct deviceproptableu8 sony_sensorcrop[] = {
 	{ N_("Off"),	0x01, 0 },
 	{ N_("On"),	0x02, 0 },
 };
@@ -7328,7 +7328,7 @@ _put_Sony_CompressionSetting(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu16 canon_eos_highisonr[] = {
+static const struct deviceproptableu16 canon_eos_highisonr[] = {
 	/* 6d values */
 	{ N_("Off"),		0, 0 },
 	{ N_("Low"),		1, 0 },
@@ -7339,7 +7339,7 @@ static struct deviceproptableu16 canon_eos_highisonr[] = {
 
 GENERIC16TABLE(Canon_EOS_HighIsoNr,canon_eos_highisonr)
 
-static struct deviceproptableu8 nikon_d90_highisonr[] = {
+static const struct deviceproptableu8 nikon_d90_highisonr[] = {
 	{ N_("Off"),	0, 0 },
 	{ N_("Low"),	1, 0 },
 	{ N_("Normal"),	2, 0 },
@@ -7347,13 +7347,13 @@ static struct deviceproptableu8 nikon_d90_highisonr[] = {
 };
 GENERIC8TABLE(Nikon_D90_HighISONR,nikon_d90_highisonr)
 
-static struct deviceproptableu8 nikon_1_highisonr[] = {
+static const struct deviceproptableu8 nikon_1_highisonr[] = {
 	{ N_("On"),	0, 0 },
 	{ N_("Off"),	3, 0 },
 };
 GENERIC8TABLE(Nikon_1_HighISONR,nikon_1_highisonr)
 
-static struct deviceproptableu8 nikon_d90_meterofftime[] = {
+static const struct deviceproptableu8 nikon_d90_meterofftime[] = {
 	{ N_("4 seconds"),	0x00, 0 },
 	{ N_("6 seconds"),	0x01, 0 },
 	{ N_("8 seconds"),	0x02, 0 },
@@ -7367,7 +7367,7 @@ static struct deviceproptableu8 nikon_d90_meterofftime[] = {
 GENERIC8TABLE(Nikon_D90_MeterOffTime,nikon_d90_meterofftime)
 
 
-static struct deviceproptableu8 nikon_rawcompression[] = {
+static const struct deviceproptableu8 nikon_rawcompression[] = {
 	{ N_("Lossless"),	0x00, 0 },
 	{ N_("Lossy"),		0x01, 0 },
 	{ N_("High Efficiency*"),0x03, 0 },
@@ -7382,13 +7382,13 @@ static struct deviceproptableu16 fuji_rawcompression[] = {
 };
 GENERIC16TABLE(Fuji_RawCompression,fuji_rawcompression)
 
-static struct deviceproptableu8 nikon_d3s_jpegcompressionpolicy[] = {
+static const struct deviceproptableu8 nikon_d3s_jpegcompressionpolicy[] = {
 	{ N_("Size Priority"),	0x00, 0 },
 	{ N_("Optimal quality"),0x01, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_JPEGCompressionPolicy,nikon_d3s_jpegcompressionpolicy)
 
-static struct deviceproptableu8 nikon_d3s_flashsyncspeed[] = {
+static const struct deviceproptableu8 nikon_d3s_flashsyncspeed[] = {
 	{ N_("1/250s (Auto FP)"),	0x00, 0 },
 	{ N_("1/250s"),			0x01, 0 },
 	{ N_("1/200s"),			0x02, 0 },
@@ -7400,7 +7400,7 @@ static struct deviceproptableu8 nikon_d3s_flashsyncspeed[] = {
 };
 GENERIC8TABLE(Nikon_D3s_FlashSyncSpeed,nikon_d3s_flashsyncspeed)
 
-static struct deviceproptableu8 nikon_d7100_flashsyncspeed[] = {
+static const struct deviceproptableu8 nikon_d7100_flashsyncspeed[] = {
 	{ N_("1/320s (Auto FP)"),	0x00, 0 },
 	{ N_("1/250s (Auto FP)"),	0x01, 0 },
 	{ N_("1/250s"),			0x02, 0 },
@@ -7413,20 +7413,20 @@ static struct deviceproptableu8 nikon_d7100_flashsyncspeed[] = {
 };
 GENERIC8TABLE(Nikon_D7100_FlashSyncSpeed,nikon_d7100_flashsyncspeed)
 
-static struct deviceproptableu8 nikon_d3s_afcmodepriority[] = {
+static const struct deviceproptableu8 nikon_d3s_afcmodepriority[] = {
 	{ N_("Release"),	0x00, 0 },
 	{ N_("Release + Focus"),0x01, 0 },
 	{ N_("Focus"),		0x02, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_AFCModePriority,nikon_d3s_afcmodepriority)
 
-static struct deviceproptableu8 nikon_d3s_afsmodepriority[] = {
+static const struct deviceproptableu8 nikon_d3s_afsmodepriority[] = {
 	{ N_("Release"),	0x00, 0 },
 	{ N_("Focus"),		0x01, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_AFSModePriority,nikon_d3s_afsmodepriority)
 
-static struct deviceproptableu8 nikon_d3s_dynamicafarea[] = {
+static const struct deviceproptableu8 nikon_d3s_dynamicafarea[] = {
 	{ N_("9 points"),	0x00, 0 },
 	{ N_("21 points"),	0x01, 0 },
 	{ N_("51 points"),	0x02, 0 },
@@ -7434,7 +7434,7 @@ static struct deviceproptableu8 nikon_d3s_dynamicafarea[] = {
 };
 GENERIC8TABLE(Nikon_D3s_DynamicAFArea,nikon_d3s_dynamicafarea)
 
-static struct deviceproptableu8 nikon_d3s_aflockon[] = {
+static const struct deviceproptableu8 nikon_d3s_aflockon[] = {
 	{ N_("5 (Long)"),	0x00, 0 },
 	{ N_("4"),		0x01, 0 },
 	{ N_("3 (Normal)"),	0x02, 0 },
@@ -7444,19 +7444,19 @@ static struct deviceproptableu8 nikon_d3s_aflockon[] = {
 };
 GENERIC8TABLE(Nikon_D3s_AFLockOn,nikon_d3s_aflockon)
 
-static struct deviceproptableu8 nikon_d3s_afactivation[] = {
+static const struct deviceproptableu8 nikon_d3s_afactivation[] = {
 	{ N_("Shutter/AF-ON"),	0x00, 0 },
 	{ N_("AF-ON"),		0x01, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_AFActivation,nikon_d3s_afactivation)
 
-static struct deviceproptableu8 nikon_d3s_afareapoint[] = {
+static const struct deviceproptableu8 nikon_d3s_afareapoint[] = {
 	{ N_("AF51"),	0x00, 0 },
 	{ N_("AF11"),	0x01, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_AFAreaPoint,nikon_d3s_afareapoint)
 
-static struct deviceproptableu8 nikon_d3s_normalafon[] = {
+static const struct deviceproptableu8 nikon_d3s_normalafon[] = {
 	{ N_("AF-ON"),		0x00, 0 },
 	{ N_("AE/AF lock"),	0x01, 0 },
 	{ N_("AE lock only"),	0x02, 0 },
@@ -7466,7 +7466,7 @@ static struct deviceproptableu8 nikon_d3s_normalafon[] = {
 };
 GENERIC8TABLE(Nikon_D3s_NormalAFOn,nikon_d3s_normalafon)
 
-static struct deviceproptableu8 nikon_d3s_flashshutterspeed[] = {
+static const struct deviceproptableu8 nikon_d3s_flashshutterspeed[] = {
 	{ N_("1/60s"),  0x00,   0 },
 	{ N_("1/30s"),  0x01,   0 },
 	{ N_("1/15s"),  0x02,   0 },
@@ -7482,7 +7482,7 @@ static struct deviceproptableu8 nikon_d3s_flashshutterspeed[] = {
 };
 GENERIC8TABLE(Nikon_D3s_FlashShutterSpeed,nikon_d3s_flashshutterspeed)
 
-static struct deviceproptableu8 nikon_d90_shootingspeed[] = {
+static const struct deviceproptableu8 nikon_d90_shootingspeed[] = {
 	{ N_("4 fps"),	0x00, 0 },
 	{ N_("3 fps"),	0x01, 0 },
 	{ N_("2 fps"),	0x02, 0 },
@@ -7490,7 +7490,7 @@ static struct deviceproptableu8 nikon_d90_shootingspeed[] = {
 };
 GENERIC8TABLE(Nikon_D90_ShootingSpeed,nikon_d90_shootingspeed)
 
-static struct deviceproptableu8 nikon_d7100_shootingspeed[] = {
+static const struct deviceproptableu8 nikon_d7100_shootingspeed[] = {
 	{ N_("6 fps"),	0x00, 0 },
 	{ N_("5 fps"),	0x01, 0 },
 	{ N_("4 fps"),	0x02, 0 },
@@ -7500,7 +7500,7 @@ static struct deviceproptableu8 nikon_d7100_shootingspeed[] = {
 };
 GENERIC8TABLE(Nikon_D7100_ShootingSpeed,nikon_d7100_shootingspeed)
 
-static struct deviceproptableu8 nikon_d3s_shootingspeed[] = {
+static const struct deviceproptableu8 nikon_d3s_shootingspeed[] = {
 	{ N_("9 fps"),	0x00, 0 },
 	{ N_("8 fps"),	0x01, 0 },
 	{ N_("7 fps"),	0x02, 0 },
@@ -7513,7 +7513,7 @@ static struct deviceproptableu8 nikon_d3s_shootingspeed[] = {
 };
 GENERIC8TABLE(Nikon_D3s_ShootingSpeed,nikon_d3s_shootingspeed)
 
-static struct deviceproptableu8 nikon_d850_shootingspeed[] = {
+static const struct deviceproptableu8 nikon_d850_shootingspeed[] = {
 	{ N_("8 fps"),	0x01, 0 },
 	{ N_("7 fps"),	0x02, 0 },
 	{ N_("6 fps"),	0x03, 0 },
@@ -7525,14 +7525,14 @@ static struct deviceproptableu8 nikon_d850_shootingspeed[] = {
 };
 GENERIC8TABLE(Nikon_D850_ShootingSpeed,nikon_d850_shootingspeed)
 
-static struct deviceproptableu8 nikon_d3s_shootingspeedhigh[] = {
+static const struct deviceproptableu8 nikon_d3s_shootingspeedhigh[] = {
 	{ N_("11 fps"),	0x00, 0 },
 	{ N_("10 fps"),	0x01, 0 },
 	{ N_("9 fps"),	0x02, 0 },
 };
 GENERIC8TABLE(Nikon_D3s_ShootingSpeedHigh,nikon_d3s_shootingspeedhigh)
 
-static struct deviceproptableu8 nikon_d7000_funcbutton[] = {
+static const struct deviceproptableu8 nikon_d7000_funcbutton[] = {
 	{ N_("Unassigned"),			0x00, 0 },/* unselectable */
 	{ N_("Preview"),			0x01, 0 },
 	{ N_("FV lock"),			0x02, 0 },
@@ -7558,14 +7558,14 @@ static struct deviceproptableu8 nikon_d7000_funcbutton[] = {
 };
 GENERIC8TABLE(Nikon_D7000_FuncButton,nikon_d7000_funcbutton)
 
-static struct deviceproptableu8 nikon_menus_and_playback[] = {
+static const struct deviceproptableu8 nikon_menus_and_playback[] = {
 	{ N_("Off"),				0x0, 0 },
 	{ N_("On"),				0x1, 0 },
 	{ N_("On (image review excluded)"),	0x2, 0 },
 };
 GENERIC8TABLE(Nikon_MenusAndPlayback,nikon_menus_and_playback)
 
-static struct deviceproptableu8 nikon_vignettecorrection[] = {
+static const struct deviceproptableu8 nikon_vignettecorrection[] = {
 	{ N_("High"),		0x0, 0 },
 	{ N_("Normal"),		0x1, 0 },
 	{ N_("Moderate"),	0x2, 0 },
@@ -7573,13 +7573,13 @@ static struct deviceproptableu8 nikon_vignettecorrection[] = {
 };
 GENERIC8TABLE(Nikon_VignetteCorrection,nikon_vignettecorrection)
 
-static struct deviceproptableu8 nikon_hdmidatadepth[] = {
+static const struct deviceproptableu8 nikon_hdmidatadepth[] = {
 	{ "8",		0x0, 0 },
 	{ "10",		0x1, 0 },
 };
 GENERIC8TABLE(Nikon_HDMIDataDepth,nikon_hdmidatadepth)
 
-static struct deviceproptableu8 nikon_facedetection[] = {
+static const struct deviceproptableu8 nikon_facedetection[] = {
 	{ N_("Off"),				0x0, 0 },
 	{ N_("Face detection"),			0x1, 0 },
 	{ N_("Face and pupil detection"),	0x2, 0 },
@@ -7587,7 +7587,7 @@ static struct deviceproptableu8 nikon_facedetection[] = {
 };
 GENERIC8TABLE(Nikon_FaceDetection,nikon_facedetection)
 
-static struct deviceproptableu32 canon_eos_movieservoaf[] = {
+static const struct deviceproptableu32 canon_eos_movieservoaf[] = {
 	{ N_("Off"),	0x0, 0 },
 	{ N_("On"),	0x1, 0 },
 };
@@ -9672,8 +9672,7 @@ _get_Panasonic_ISO(CONFIG_GET_ARGS) {
 	return GP_OK;
 }
 
-static
-struct {
+static const struct {
 	char*	str;
 	uint16_t val;
 } panasonic_wbtable[] = {
@@ -9830,8 +9829,7 @@ _get_Panasonic_ColorTemp(CONFIG_GET_ARGS) {
 	return GP_OK;
 }
 
-static
-struct {
+static const struct {
 	char*	str;
 	uint16_t val;
 } panasonic_aftable[] = {
@@ -9905,8 +9903,7 @@ _get_Panasonic_AFMode(CONFIG_GET_ARGS) {
 	return GP_OK;
 	}
 
-static
-struct {
+static const struct {
 	char*	str;
 	uint16_t val;
 } panasonic_mftable[] = {
@@ -9949,8 +9946,7 @@ _get_Panasonic_MFAdjust(CONFIG_GET_ARGS) {
 	return GP_OK;
 }
 
-static
-struct {
+static const struct {
 	char*	str;
 	uint16_t val;
 } panasonic_rmodetable[] = {
@@ -10020,8 +10016,7 @@ _put_Panasonic_ExpMode(CONFIG_PUT_ARGS)
 	//printf("val : %d\n", val);
 	return translate_ptp_result (ptp_panasonic_recordmode(params, (uint16_t)val));
 }
-static
-struct {
+static const struct {
 	char*	str;
 	uint16_t val;
 } panasonic_recordtable[] = {
@@ -10497,7 +10492,7 @@ _put_Nikon_Thumbsize(CONFIG_PUT_ARGS) {
 	return GP_ERROR;
 }
 
-static struct {
+static const struct {
 	char	*name;
 	char	*label;
 } capturetargets[] = {
@@ -10558,14 +10553,14 @@ _put_CaptureTarget(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct deviceproptableu16 sony_capturetarget[] = {
+static const struct deviceproptableu16 sony_capturetarget[] = {
 	{ "sdram",		0x0001, 0 },
 	{ "card",		0x0010, 0 },
 	{ "card+sdram",		0x0011, 0 },
 };
 GENERIC16TABLE(Sony_CaptureTarget,sony_capturetarget)
 
-static struct deviceproptableu32 audio_format[] = {
+static const struct deviceproptableu32 audio_format[] = {
 	{ "PCM",		0x0001, 0 },
 	{ "ADPCM",		0x0002, 0 },
 	{ "IEEE float",		0x0003, 0 },
@@ -10609,7 +10604,7 @@ static struct deviceproptableu32 audio_format[] = {
 };
 GENERIC32TABLE(Audio_Format,audio_format)
 
-static struct {
+static const struct {
 	char	*name;
 	char	*label;
 } chdkonoff[] = {
@@ -10669,7 +10664,7 @@ _put_Canon_SetModeDialDisable(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static struct {
+static const struct {
 	char	*name;
 	char	*label;
 } afonoff[] = {
@@ -10870,7 +10865,7 @@ _put_nikon_wifi_profile_channel(CONFIG_PUT_ARGS) {
 	return GP_OK;
 }
 
-static char* encryption_values[] = {
+static const char* const encryption_values[] = {
 N_("None"),
 N_("WEP 64-bit"),
 N_("WEP 128-bit"),
@@ -10916,7 +10911,7 @@ _put_nikon_wifi_profile_encryption(CONFIG_PUT_ARGS) {
 	return GP_ERROR_BAD_PARAMETERS;
 }
 
-static char* accessmode_values[] = {
+static const char* const accessmode_values[] = {
 N_("Managed"),
 N_("Ad-hoc"),
 NULL
@@ -11056,7 +11051,7 @@ _put_nikon_wifi_profile_write(CONFIG_PUT_ARGS) {
 	return (GP_OK);
 }
 
-static struct submenu create_wifi_profile_submenu[] = {
+static const struct submenu create_wifi_profile_submenu[] = {
 	{ N_("Profile name"),                   "name",         0,  PTP_VENDOR_NIKON,   0,  _get_nikon_wifi_profile_prop,       _put_nikon_wifi_profile_prop },
 	{ N_("WIFI ESSID"),                     "essid",        0,  PTP_VENDOR_NIKON,   0,  _get_nikon_wifi_profile_prop,       _put_nikon_wifi_profile_prop },
 	{ N_("IP address (empty for DHCP)"),    "ipaddr",       0,  PTP_VENDOR_NIKON,   0,  _get_nikon_wifi_profile_prop,       _put_nikon_wifi_profile_prop },
@@ -11080,7 +11075,7 @@ _get_nikon_create_wifi_profile (CONFIG_GET_ARGS)
 	gp_widget_set_name (*widget, menu->name);
 
 	for (submenuno = 0; create_wifi_profile_submenu[submenuno].name ; submenuno++ ) {
-		struct submenu *cursub = create_wifi_profile_submenu+submenuno;
+		const struct submenu *cursub = create_wifi_profile_submenu+submenuno;
 
 		ret = cursub->getfunc (camera, &subwidget, cursub, NULL);
 		if (ret == GP_OK)
@@ -11097,7 +11092,7 @@ _put_nikon_create_wifi_profile (CONFIG_PUT_ARGS)
 	CameraWidget *subwidget;
 
 	for (submenuno = 0; create_wifi_profile_submenu[submenuno].name ; submenuno++ ) {
-		struct submenu *cursub = create_wifi_profile_submenu+submenuno;
+		const struct submenu *cursub = create_wifi_profile_submenu+submenuno;
 
 		ret = gp_widget_get_child_by_label (widget, _(cursub->label), &subwidget);
 		if (ret != GP_OK)
@@ -11114,7 +11109,7 @@ _put_nikon_create_wifi_profile (CONFIG_PUT_ARGS)
 	return GP_OK;
 }
 
-static struct submenu wifi_profiles_menu[] = {
+static const struct submenu wifi_profiles_menu[] = {
 	/* wifi */
 	{ N_("List Wifi profiles"), "list", 0, PTP_VENDOR_NIKON, 0, _get_nikon_list_wifi_profiles, _put_nikon_list_wifi_profiles },
 	{ N_("Create Wifi profile"), "new", 0, PTP_VENDOR_NIKON, 0, _get_nikon_create_wifi_profile, _put_nikon_create_wifi_profile },
@@ -11139,7 +11134,7 @@ _get_wifi_profiles_menu (CONFIG_MENU_GET_ARGS)
 	gp_widget_set_name (*widget, menu->name);
 
 	for (submenuno = 0; wifi_profiles_menu[submenuno].name ; submenuno++ ) {
-		struct submenu *cursub = wifi_profiles_menu+submenuno;
+		const struct submenu *cursub = wifi_profiles_menu+submenuno;
 
 		ret = cursub->getfunc (camera, &subwidget, cursub, NULL);
 		if (ret == GP_OK)
@@ -11156,7 +11151,7 @@ _put_wifi_profiles_menu (CONFIG_MENU_PUT_ARGS)
 	CameraWidget *subwidget;
 
 	for (submenuno = 0; wifi_profiles_menu[submenuno].name ; submenuno++ ) {
-		struct submenu *cursub = wifi_profiles_menu+submenuno;
+		const struct submenu *cursub = wifi_profiles_menu+submenuno;
 
 		ret = gp_widget_get_child_by_label (widget, _(cursub->label), &subwidget);
 		if (ret != GP_OK)
@@ -11219,7 +11214,7 @@ _get_PTP_Manufacturer_STR(CONFIG_GET_ARGS) {
 }
 
 
-static struct submenu camera_actions_menu[] = {
+static const struct submenu camera_actions_menu[] = {
 	/* { N_("Viewfinder Mode"), "viewfinder", PTP_DPC_CANON_ViewFinderMode, PTP_VENDOR_CANON, PTP_DTC_UINT32, _get_Canon_ViewFinderMode, _put_Canon_ViewFinderMode}, */
 	/*{ N_("Synchronize camera date and time with PC"),"syncdatetime", PTP_DPC_CANON_UnixTime, PTP_VENDOR_CANON, PTP_DTC_UINT32, _get_Canon_SyncTime, _put_Canon_SyncTime },*/
 	{ N_("Synchronize camera date and time with PC (UTC)"),"syncdatetimeutc", PTP_DPC_CANON_EOS_UTCTime, PTP_VENDOR_CANON, PTP_DTC_UINT32, _get_Canon_SyncTime, _put_Canon_SyncTime },
@@ -11278,7 +11273,7 @@ static struct submenu camera_actions_menu[] = {
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu camera_status_menu[] = {
+static const struct submenu camera_status_menu[] = {
 	{ N_("Serial Number"),          "serialnumber",     0,  0,  PTP_OC_GetDeviceInfo,   _get_PTP_Serial_STR,            _put_None },
 	{ N_("Camera Manufacturer"),    "manufacturer",     0,  0,  PTP_OC_GetDeviceInfo,   _get_PTP_Manufacturer_STR,      _put_None },
 	{ N_("Camera Model"),           "cameramodel",      0,  0,  PTP_OC_GetDeviceInfo,   _get_PTP_Model_STR,             _put_None },
@@ -11333,7 +11328,7 @@ static struct submenu camera_status_menu[] = {
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu camera_settings_menu[] = {
+static const struct submenu camera_settings_menu[] = {
 	{ N_("Camera Date and Time"),   "datetimeutc",          PTP_DPC_CANON_EOS_UTCTime,          PTP_VENDOR_CANON,   PTP_DTC_UINT32, _get_UINT32_as_time,            _put_UINT32_as_time },
 	{ N_("Camera Date and Time"),   "datetime",             PTP_DPC_CANON_UnixTime,             PTP_VENDOR_CANON,   PTP_DTC_UINT32, _get_UINT32_as_localtime,       _put_UINT32_as_localtime },
 	{ N_("Camera Date and Time"),   "datetime",             PTP_DPC_CANON_EOS_CameraTime,       PTP_VENDOR_CANON,   PTP_DTC_UINT32, _get_UINT32_as_localtime,       _put_UINT32_as_localtime },
@@ -11396,7 +11391,7 @@ static struct submenu camera_settings_menu[] = {
 };
 
 /* think of this as properties of the "film" */
-static struct submenu image_settings_menu[] = {
+static const struct submenu image_settings_menu[] = {
 	{ N_("Image Quality"),          "imagequality",         PTP_DPC_CANON_ImageQuality,             PTP_VENDOR_CANON,   PTP_DTC_UINT8,  _get_Canon_Quality,             _put_Canon_Quality },
 	{ N_("Image Format"),           "imageformat",          PTP_DPC_OLYMPUS_ImageFormat,            PTP_VENDOR_GP_OLYMPUS_OMD,   PTP_DTC_UINT16,  _get_Olympus_Imageformat, _put_Olympus_Imageformat },
 	{ N_("Image Format"),           "imageformat",          PTP_DPC_CANON_FullViewFileFormat,       PTP_VENDOR_CANON,   PTP_DTC_UINT8,  _get_Canon_Capture_Format,      _put_Canon_Capture_Format },
@@ -11461,7 +11456,7 @@ static struct submenu image_settings_menu[] = {
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu capture_settings_menu[] = {
+static const struct submenu capture_settings_menu[] = {
 	{ N_("Long Exp Noise Reduction"),       "longexpnr",                PTP_DPC_NIKON_LongExposureNoiseReduction, PTP_VENDOR_NIKON, PTP_DTC_UINT8,  _get_Nikon_OnOff_UINT8,             _put_Nikon_OnOff_UINT8 },
 	{ N_("Long Exp Noise Reduction"),       "longexpnr",                PTP_DPC_NIKON_1_LongExposureNoiseReduction, PTP_VENDOR_NIKON,PTP_DTC_UINT8, _get_Nikon_OnOff_UINT8,             _put_Nikon_OnOff_UINT8 },
 	{ N_("Auto Focus Mode 2"),              "autofocusmode2",           PTP_DPC_NIKON_A4AFActivation,           PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_OnOff_UINT8,             _put_Nikon_OnOff_UINT8 },
@@ -11697,40 +11692,40 @@ static struct submenu capture_settings_menu[] = {
 /* Nikon camera specific values, as unfortunately the values are handled differently
  * A generic fallback for the "rest" of the Nikons is in the main menu.
  */
-static struct submenu nikon_1_j3_camera_settings[] = {
+static const struct submenu nikon_1_j3_camera_settings[] = {
 	{ N_("ISO Speed"),              "iso",                  PTP_DPC_NIKON_1_ISO,                PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_1_J3_ISO,                _put_Nikon_1_J3_ISO },
 	{ 0,0,0,0,0,0,0 },
 };
-static struct submenu nikon_1_s1_camera_settings[] = {
+static const struct submenu nikon_1_s1_camera_settings[] = {
 	{ N_("ISO Speed"),              "iso",                  PTP_DPC_NIKON_1_ISO,                PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_1_S1_ISO,                _put_Nikon_1_S1_ISO },
 	{ 0,0,0,0,0,0,0 },
 };
 /* Nikon D90. Marcus Meissner <marcus@jet.franken.de> */
-static struct submenu nikon_d90_camera_settings[] = {
+static const struct submenu nikon_d90_camera_settings[] = {
 	{ N_("Meter Off Time"),         "meterofftime",         PTP_DPC_NIKON_MeterOff,             PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_MeterOffTime,        _put_Nikon_D90_MeterOffTime },
 	{ 0,0,0,0,0,0,0 },
 };
 
 /* Nikon D7000. Marcus Meissner <marcus@jet.franken.de> */
-static struct submenu nikon_d7000_camera_settings[] = {
+static const struct submenu nikon_d7000_camera_settings[] = {
 	{ N_("Assign Func Button"),     "funcbutton",           PTP_DPC_NIKON_F4AssignFuncButton,   PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7000_FuncButton,        _put_Nikon_D7000_FuncButton },
 	{ N_("Assign Preview Button"),  "previewbutton",        PTP_DPC_NIKON_PreviewButton,        PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7000_FuncButton,        _put_Nikon_D7000_FuncButton },
 	{ 0,0,0,0,0,0,0 },
 };
 
 /* Nikon D7100. Daniel Wagenaar <wagenadl@uc.edu> */
-static struct submenu nikon_d7100_camera_settings[] = {
+static const struct submenu nikon_d7100_camera_settings[] = {
 	{ N_("Assign Func Button"),     "funcbutton",           PTP_DPC_NIKON_F4AssignFuncButton,   PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7000_FuncButton,        _put_Nikon_D7000_FuncButton },
 	{ N_("Assign Preview Button"),  "previewbutton",        PTP_DPC_NIKON_PreviewButton,        PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7000_FuncButton,        _put_Nikon_D7000_FuncButton },
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_d40_capture_settings[] = {
+static const struct submenu nikon_d40_capture_settings[] = {
 	{ N_("Image Quality"),          "imagequality",         PTP_DPC_CompressionSetting,         PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D40_Compression,         _put_Nikon_D40_Compression },
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_d850_capture_settings[] = {
+static const struct submenu nikon_d850_capture_settings[] = {
 	{ N_("Image Quality"),                  "imagequality",         PTP_DPC_CompressionSetting,     PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D850_Compression,       _put_Nikon_D850_Compression },
 	{ N_("Image Rotation Flag"),            "imagerotationflag",    PTP_DPC_NIKON_ImageRotation,    PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_OffOn_UINT8,            _put_Nikon_OffOn_UINT8 },
 	{ N_("Active D-Lighting"),              "dlighting",            PTP_DPC_NIKON_ActiveDLighting,  PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D850_ActiveDLighting,   _put_Nikon_D850_ActiveDLighting },
@@ -11741,19 +11736,19 @@ static struct submenu nikon_d850_capture_settings[] = {
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_d7500_capture_settings[] = {
+static const struct submenu nikon_d7500_capture_settings[] = {
 	{ N_("Image Quality"), "imagequality", PTP_DPC_CompressionSetting, PTP_VENDOR_NIKON, PTP_DTC_UINT8, _get_Nikon_D7500_Compression, _put_Nikon_D7500_Compression },
 	{ 0,0,0,0,0,0,0 },
 };
 
 /* D780 has the same list as the D7500 */
-static struct submenu nikon_d780_capture_settings[] = {
+static const struct submenu nikon_d780_capture_settings[] = {
 	{ N_("Image Quality"), "imagequality", PTP_DPC_CompressionSetting, PTP_VENDOR_NIKON, PTP_DTC_UINT8, _get_Nikon_D7500_Compression, _put_Nikon_D7500_Compression },
 	{ 0,0,0,0,0,0,0 },
 };
 
 /* D500 has the same list as the D850 */
-static struct submenu nikon_d500_capture_settings[] = {
+static const struct submenu nikon_d500_capture_settings[] = {
 	{ N_("Image Quality"), "imagequality", PTP_DPC_CompressionSetting, PTP_VENDOR_NIKON, PTP_DTC_UINT8, _get_Nikon_D850_Compression, _put_Nikon_D850_Compression },
 	{ 0,0,0,0,0,0,0 },
 };
@@ -11761,20 +11756,20 @@ static struct submenu nikon_d500_capture_settings[] = {
 /* D5000...
  * compression is same as D90
  */
-static struct submenu nikon_d5000_capture_settings[] = {
+static const struct submenu nikon_d5000_capture_settings[] = {
 	{ N_("Image Quality"),                  "imagequality",         PTP_DPC_CompressionSetting,     PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_Compression,     _put_Nikon_D90_Compression },
 	{ N_("Live View Image Zoom Ratio"),     "liveviewimagezoomratio", PTP_DPC_NIKON_LiveViewImageZoomRatio, PTP_VENDOR_NIKON, PTP_DTC_UINT8, _get_Nikon_LiveViewImageZoomRatio_D5000, _put_Nikon_LiveViewImageZoomRatio_D5000 },
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_z6_capture_settings[] = {
+static const struct submenu nikon_z6_capture_settings[] = {
 	{ N_("Image Quality"),                  "imagequality",         PTP_DPC_CompressionSetting,     PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D850_Compression,    _put_Nikon_D850_Compression },
 	{ N_("Focus Metering Mode"),            "focusmetermode",       PTP_DPC_FocusMeteringMode,      PTP_VENDOR_NIKON,   PTP_DTC_UINT16, _get_Nikon_D850_FocusMetering,  _put_Nikon_D850_FocusMetering },
 	{ N_("Minimum Shutter Speed"),          "minimumshutterspeed",  PTP_DPC_NIKON_PADVPMode,        PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_Z6_PADVPValue,       _put_Nikon_Z6_PADVPValue },
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_d5100_capture_settings[] = {
+static const struct submenu nikon_d5100_capture_settings[] = {
 	{ N_("Movie Quality"),          "moviequality",         PTP_DPC_NIKON_MovScreenSize,        0,                  PTP_DTC_UINT8,  _get_Nikon_D5100_MovieQuality,      _put_Nikon_D5100_MovieQuality },
 	{ N_("Exposure Program"),       "expprogram",           PTP_DPC_ExposureProgramMode,        0,                  PTP_DTC_UINT16, _get_NIKON_D5100_ExposureProgram,   _put_NIKON_D5100_ExposureProgram },
 	{ N_("Minimum Shutter Speed"),  "minimumshutterspeed",  PTP_DPC_NIKON_PADVPMode,            PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_PADVPValue,          _put_Nikon_D90_PADVPValue },
@@ -11782,7 +11777,7 @@ static struct submenu nikon_d5100_capture_settings[] = {
 };
 
 /* Nikon D7100. Daniel Wagenaar <wagenadl@uc.edu> */
-static struct submenu nikon_d7100_capture_settings[] = {
+static const struct submenu nikon_d7100_capture_settings[] = {
 	{ N_("Movie Resolution"),               "moviequality",         PTP_DPC_NIKON_MovScreenSize,    PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7100_MovieQuality,      _put_Nikon_D7100_MovieQuality },
 	{ N_("Movie Quality"),                  "moviequality2",        PTP_DPC_NIKON_MovQuality,       PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7100_MovieQuality2,     _put_Nikon_D7100_MovieQuality2 },
 	{ N_("Exposure Program"),               "expprogram",           PTP_DPC_ExposureProgramMode,    0,                  PTP_DTC_UINT16, _get_NIKON_D7100_ExposureProgram,   _put_NIKON_D7100_ExposureProgram },
@@ -11793,7 +11788,7 @@ static struct submenu nikon_d7100_capture_settings[] = {
 	{ N_("Focus Metering"),                 "focusmetering",        PTP_DPC_FocusMeteringMode,      PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D7100_FocusMetering,     _put_Nikon_D7100_FocusMetering },
 	{ 0,0,0,0,0,0,0 },
 };
-static struct submenu nikon_d90_capture_settings[] = {
+static const struct submenu nikon_d90_capture_settings[] = {
 	{ N_("Minimum Shutter Speed"),          "minimumshutterspeed",  PTP_DPC_NIKON_PADVPMode,        PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_PADVPValue,      _put_Nikon_D90_PADVPValue },
 	{ N_("ISO Auto Hi Limit"),              "isoautohilimit",       PTP_DPC_NIKON_ISOAutoHiLimit,   PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_ISOAutoHiLimit,  _put_Nikon_D90_ISOAutoHiLimit },
 	{ N_("Active D-Lighting"),              "dlighting",            PTP_DPC_NIKON_ActiveDLighting,  PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_ActiveDLighting, _put_Nikon_D90_ActiveDLighting },
@@ -11803,7 +11798,7 @@ static struct submenu nikon_d90_capture_settings[] = {
 };
 
 /* One D3s reporter is Matthias Blaicher */
-static struct submenu nikon_d3s_capture_settings[] = {
+static const struct submenu nikon_d3s_capture_settings[] = {
 	{ N_("Minimum Shutter Speed"),          "minimumshutterspeed",      PTP_DPC_NIKON_PADVPMode,                PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D3s_PADVPValue,              _put_Nikon_D3s_PADVPValue },
 	{ N_("ISO Auto Hi Limit"),              "isoautohilimit",           PTP_DPC_NIKON_ISOAutoHiLimit,           PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D3s_ISOAutoHiLimit,          _put_Nikon_D3s_ISOAutoHiLimit },
 	{ N_("Continuous Shooting Speed Slow"), "shootingspeed",            PTP_DPC_NIKON_D1ShootingSpeed,          PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D3s_ShootingSpeed,           _put_Nikon_D3s_ShootingSpeed },
@@ -11826,7 +11821,7 @@ static struct submenu nikon_d3s_capture_settings[] = {
 	{ 0,0,0,0,0,0,0 },
 };
 
-static struct submenu nikon_generic_capture_settings[] = {
+static const struct submenu nikon_generic_capture_settings[] = {
 	/* filled in with D90 values */
 	{ N_("Minimum Shutter Speed"),          "minimumshutterspeed",      PTP_DPC_NIKON_PADVPMode,                PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_PADVPValue,          _put_Nikon_D90_PADVPValue },
 	{ N_("ISO Auto Hi Limit"),              "isoautohilimit",           PTP_DPC_NIKON_ISOAutoHiLimit,           PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_D90_ISOAutoHiLimit,      _put_Nikon_D90_ISOAutoHiLimit },
@@ -11859,7 +11854,7 @@ static struct submenu nikon_generic_capture_settings[] = {
 };
 
 
-static struct menu menus[] = {
+static const struct menu menus[] = {
 	{ N_("Camera Actions"),             "actions",          0,      0,      camera_actions_menu,            NULL,   NULL },
 
 	{ N_("Camera Settings"),            "settings",         0x4b0,  0x0428, nikon_d7000_camera_settings,    NULL,   NULL },
@@ -11953,7 +11948,7 @@ _get_config (Camera *camera, const char *confname, CameraWidget **outwidget, Cam
 	for (menuno = 0; menuno < ARRAYSIZE(menus) ; menuno++ ) {
 		if (!menus[menuno].submenus) { /* Custom menu */
 			if (mode == MODE_GET) {
-				struct menu *cur = menus+menuno;
+				const struct menu *cur = menus+menuno;
 				ret = cur->getfunc(camera, &section, cur);
 				if (ret == GP_OK)
 					gp_widget_append(window, section);
@@ -11980,7 +11975,7 @@ _get_config (Camera *camera, const char *confname, CameraWidget **outwidget, Cam
 			}
 		}
 		for (submenuno = 0; menus[menuno].submenus[submenuno].name ; submenuno++ ) {
-			struct submenu *cursub = menus[menuno].submenus+submenuno;
+			const struct submenu *cursub = menus[menuno].submenus+submenuno;
 			widget = NULL;
 
 			if (	have_prop(camera,cursub->vendorid,cursub->propid) ||
@@ -12427,7 +12422,7 @@ _set_config (Camera *camera, const char *confname, CameraWidget *window, GPConte
 
 		/* Standard menu with submenus */
 		for (submenuno = 0; menus[menuno].submenus[submenuno].label ; submenuno++ ) {
-			struct submenu *cursub = menus[menuno].submenus+submenuno;
+			const struct submenu *cursub = menus[menuno].submenus+submenuno;
 			int alreadyset = 0;
 
 			ret = GP_OK;
@@ -12700,7 +12695,7 @@ camera_lookup_by_property(Camera *camera, PTPDevicePropDesc *dpd, char **name, c
 		}
 
 		for (submenuno = 0; menus[menuno].submenus[submenuno].name ; submenuno++ ) {
-			struct submenu		*cursub = menus[menuno].submenus+submenuno;
+			const struct submenu		*cursub = menus[menuno].submenus+submenuno;
 			CameraWidgetType	type;
 
 			widget = NULL;

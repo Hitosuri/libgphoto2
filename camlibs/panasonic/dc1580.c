@@ -48,7 +48,7 @@
 
 /* dsc2_checksum - establish checksum for size bytes in buffer */
 
-static uint8_t dsc2_checksum(char *buffer, int size) {
+static uint8_t dsc2_checksum(const char *buffer, int size) {
 
 	int     checksum = 0;
 	int     i;
@@ -617,7 +617,7 @@ static int camera_about (Camera *camera, CameraText *about, GPContext *context)
 	return (GP_OK);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_info_func = get_info_func,
 	.get_file_func = get_file_func,

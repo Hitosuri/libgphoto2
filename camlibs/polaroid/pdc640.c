@@ -61,7 +61,7 @@ struct _CameraPrivateLibrary{
 static int flip_vertical (int width, int height, unsigned char *rgb);
 static int flip_both     (int width, int height, unsigned char *rgb);
 
-static struct {
+static const struct {
 	const char*				model;
 	int vendor,product;
 	struct _CameraPrivateLibrary	pl;
@@ -522,7 +522,7 @@ pdc640_processtn (int width, int height, unsigned char **data, int size) {
 }
 
 static int
-pdc640_getbit (unsigned char *data, int *ofs, int size, int *bit) {
+pdc640_getbit (const unsigned char *data, int *ofs, int size, int *bit) {
 	static char c;
 	int b;
 
@@ -981,7 +981,7 @@ camera_exit (Camera *camera, GPContext *context)
 	return (GP_OK);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_info_func = get_info_func,
 	.get_file_func = get_file_func,

@@ -387,7 +387,7 @@ chdk_get_file_func (CameraFilesystem *fs, const char *folder, const char *filena
 }
 
 
-static CameraFilesystemFuncs chdk_fsfuncs = {
+static const CameraFilesystemFuncs chdk_fsfuncs = {
 	.file_list_func         = chdk_file_list_func,
 	.folder_list_func       = chdk_folder_list_func,
 	.get_info_func          = chdk_get_info_func,
@@ -522,8 +522,8 @@ ISO Mode: 0
 }
 
 struct submenu;
-typedef int (*get_func) (PTPParams *, struct submenu*, CameraWidget **, GPContext *);
-#define CONFIG_GET_ARGS PTPParams *params, struct submenu *menu, CameraWidget **widget, GPContext *context
+typedef int (*get_func) (PTPParams *, const struct submenu*, CameraWidget **, GPContext *);
+#define CONFIG_GET_ARGS PTPParams *params, const struct submenu *menu, CameraWidget **widget, GPContext *context
 typedef int (*put_func) (PTPParams *, CameraWidget *, GPContext *);
 #define CONFIG_PUT_ARGS PTPParams *params, CameraWidget *widget, GPContext *context
 
@@ -975,7 +975,7 @@ chdk_put_mflock(CONFIG_PUT_ARGS) {
 	return chdk_generic_script_run (params, lua, NULL, NULL, context);
 }
 
-static struct {
+static const struct {
 	char    *name;
 	char    *label;
 } chdkonoff[] = {
@@ -1016,7 +1016,7 @@ chdk_put_onoff(CONFIG_PUT_ARGS) {
 }
 
 
-struct submenu imgsettings[] = {
+static const struct submenu imgsettings[] = {
 	{ N_("Raw ISO"),	"rawiso",	chdk_get_iso,	 	chdk_put_iso},
 	{ N_("ISO"),		"iso",		chdk_get_iso_market,	chdk_put_iso_market},
 	{ N_("Aperture"),	"aperture",	chdk_get_av,		chdk_put_av},
@@ -1137,7 +1137,7 @@ chdk_camera_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pat
 }
 
 #ifdef HAVE_LIBJPEG
-static void yuv_live_to_jpeg(unsigned char *p_yuv,
+static void yuv_live_to_jpeg(const unsigned char *p_yuv,
 			     unsigned int buf_width, unsigned int width, unsigned int height,
 			     int fb_type, CameraFile *file
 ) {
@@ -1250,7 +1250,7 @@ static inline uint8_t yuv_to_b (uint8_t y, int8_t u) {
 	return clip_yuv (((y<<12) + u*7258          + 2048)>>12);
 }
 
-static void yuv_live_to_ppm (unsigned char *p_yuv,
+static void yuv_live_to_ppm (const unsigned char *p_yuv,
 			     int buf_width, int width, int height,
 			     int fb_type, CameraFile *file
 ) {

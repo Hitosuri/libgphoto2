@@ -325,7 +325,7 @@ memory_getfunc(PTPParams* params, void* private,
 
 static uint16_t
 memory_putfunc(PTPParams* params, void* private,
-	       unsigned long sendlen, unsigned char *data
+	       unsigned long sendlen, const unsigned char *data
 ) {
 	PTPMemHandlerPrivate* priv = (PTPMemHandlerPrivate*)private;
 
@@ -422,7 +422,7 @@ fd_getfunc(PTPParams* params, void* private,
 
 static uint16_t
 fd_putfunc(PTPParams* params, void* private,
-	unsigned long sendlen, unsigned char *data
+	unsigned long sendlen, const unsigned char *data
 ) {
 	ssize_t	written;
 	PTPFDHandlerPrivate* priv = (PTPFDHandlerPrivate*)private;
@@ -5884,7 +5884,7 @@ ptp_free_object (PTPObject *ob)
 }
 
 /* PTP error descriptions */
-static struct {
+static const struct {
 	uint16_t rc;
 	uint16_t vendor;
 	const char *txt;
@@ -8387,7 +8387,7 @@ ptp_render_property_value(PTPParams* params, uint16_t dpc,
 	return 0;
 }
 
-struct {
+static const struct {
 	uint16_t ofc;
 	const char *format;
 } ptp_ofc_trans[] = {
@@ -8423,7 +8423,7 @@ struct {
 	{PTP_OFC_DNG,"DNG"},
 };
 
-struct {
+static const struct {
 	uint16_t ofc;
 	const char *format;
 } ptp_ofc_mtp_trans[] = {
@@ -8547,7 +8547,7 @@ typedef struct {
 	const char *name;
 } ptp_opcode_trans_t;
 
-ptp_opcode_trans_t ptp_opcode_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_trans[] = {
 	{PTP_OC_Undefined,N_("Undefined")},
 	{PTP_OC_GetDeviceInfo,N_("Get device info")},
 	{PTP_OC_OpenSession,N_("Open session")},
@@ -8589,7 +8589,7 @@ ptp_opcode_trans_t ptp_opcode_trans[] = {
 	{PTP_OC_GetStream,N_("Get Stream")},
 };
 
-ptp_opcode_trans_t ptp_opcode_mtp_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_mtp_trans[] = {
 	{PTP_OC_MTP_GetObjectPropsSupported,N_("Get object properties supported")},
 	{PTP_OC_MTP_GetObjectPropDesc,N_("Get object property description")},
 	{PTP_OC_MTP_GetObjectPropValue,N_("Get object property value")},
@@ -8653,7 +8653,7 @@ ptp_opcode_trans_t ptp_opcode_mtp_trans[] = {
 	{PTP_OC_ANDROID_EndEditObject,N_("End Edit Object")},
 };
 
-ptp_opcode_trans_t ptp_opcode_nikon_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_nikon_trans[] = {
 	{PTP_OC_NIKON_GetProfileAllData,"GetProfileAllData"},
 	{PTP_OC_NIKON_SendProfileData,"SendProfileData"},
 	{PTP_OC_NIKON_DeleteProfile,"DeleteProfile"},
@@ -8726,7 +8726,7 @@ ptp_opcode_trans_t ptp_opcode_nikon_trans[] = {
 	{PTP_OC_NIKON_ResetMenu,"ResetMenu"},
 };
 
-ptp_opcode_trans_t ptp_opcode_canon_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_canon_trans[] = {
 	{PTP_OC_CANON_GetPartialObjectInfo,"GetPartialObjectInfo"},
 	{PTP_OC_CANON_SetObjectArchive,"SetObjectArchive"},
 	{PTP_OC_CANON_KeepDeviceOn,"KeepDeviceOn"},
@@ -8938,7 +8938,7 @@ ptp_opcode_trans_t ptp_opcode_canon_trans[] = {
 	{PTP_OC_CANON_EOS_DV_Get_Template_XML,"CANON_EOS_DV_Get_Template_XML"},
 };
 
-ptp_opcode_trans_t ptp_opcode_sony_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_sony_trans[] = {
 	{PTP_OC_SONY_SDIO_Connect,"SDIO_Connect"},
 	{PTP_OC_SONY_SDIO_GetExtDeviceInfo,"SDIO_GetExtDeviceInfo"},
 	{PTP_OC_SONY_GetDevicePropdesc,"GetDevicePropdesc"},
@@ -8964,7 +8964,7 @@ ptp_opcode_trans_t ptp_opcode_sony_trans[] = {
 	{PTP_OC_SONY_QX_SendUpdateFile, "QX_SendUpdateFile"},
 };
 
-ptp_opcode_trans_t ptp_opcode_parrot_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_parrot_trans[] = {
 	{PTP_OC_PARROT_GetSunshineValues,"GetSunshineValues"},
 	{PTP_OC_PARROT_GetTemperatureValues,"GetTemperatureValues"},
 	{PTP_OC_PARROT_GetAngleValues,"GetAngleValues"},
@@ -8981,7 +8981,7 @@ ptp_opcode_trans_t ptp_opcode_parrot_trans[] = {
 	{PTP_OC_PARROT_SendFirmwareUpdate,"SendFirmwareUpdate"},
 };
 
-ptp_opcode_trans_t ptp_opcode_leica_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_leica_trans[] = {
 	{PTP_OC_LEICA_SetCameraSettings,"SetCameraSettings"},
 	{PTP_OC_LEICA_GetCameraSettings,"GetCameraSettings"},
 	{PTP_OC_LEICA_GetLensParameter,"GetLensParameter"},
@@ -9034,7 +9034,7 @@ ptp_opcode_trans_t ptp_opcode_leica_trans[] = {
 	{PTP_OC_LEICA_GetViewFinderData,"GetViewFinderData"},
 };
 
-ptp_opcode_trans_t ptp_opcode_sigmafp_trans[] = {
+static const ptp_opcode_trans_t ptp_opcode_sigmafp_trans[] = {
 	{PTP_OC_SIGMA_FP_GetCamConfig,"GetCamConfig"},
 	{PTP_OC_SIGMA_FP_GetCamStatus,"GetCamStatus"},
 	{PTP_OC_SIGMA_FP_GetDataGroup1,"GetDataGroup1"},
@@ -9105,7 +9105,7 @@ ptp_get_opcode_name(PTPParams* params, uint16_t opcode)
 }
 
 
-struct {
+static const struct {
 	uint16_t code;
 	uint16_t vendor;
 	const char *name;
@@ -9231,7 +9231,7 @@ ptp_get_eos_event_name(PTPParams *params, enum _PTPCanonEOSEventType type)
 	}
 }
 
-struct {
+static const struct {
 	uint16_t id;
 	const char *name;
 } ptp_opc_trans[] = {

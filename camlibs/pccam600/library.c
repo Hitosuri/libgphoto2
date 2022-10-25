@@ -250,7 +250,7 @@ static int delete_file_func(CameraFilesystem *fs, const char *folder,
 	return GP_OK;
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.get_file_func = get_file_func,
 	.file_list_func = file_list_func,
 	.del_file_func = delete_file_func,

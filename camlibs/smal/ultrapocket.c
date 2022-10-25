@@ -43,7 +43,7 @@
 
 #define GP_MODULE "Smal Ultrapocket"
 
-static const char *BayerTileNames[8] = {
+static const char *const BayerTileNames[8] = {
     "RGGB",
     "GRBG",
     "BGGR",

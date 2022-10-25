@@ -128,7 +128,7 @@
  * Check the integrity of datas
  */
 static unsigned char
-k_calculate_checksum (unsigned char *buf, unsigned long int len)
+k_calculate_checksum (const unsigned char *buf, unsigned long int len)
 {
 	unsigned int i;
 	unsigned char result=0;
@@ -1251,7 +1251,7 @@ camera_abilities (CameraAbilitiesList *list)
  * Initialization of the camera
  */
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_info_func = get_info_func,
 	.get_file_func = get_file_func,

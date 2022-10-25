@@ -143,6 +143,9 @@ canon_serial_init (Camera *camera)
 
 	GP_DEBUG ("Initializing the (serial) camera.");
 
+	/* Initial allocation / 2 */
+	camera->pl->serial.recv_msg_buffer_size = 512;
+
 	/* Get the current settings */
 	gp_port_get_settings (camera->port, &settings);
 
@@ -241,7 +244,7 @@ canon_serial_get_byte (GPPort *gdev)
 static int
 canon_serial_send_frame (Camera *camera, const unsigned char *pkt, int len)
 {
-	static unsigned char buffer[2100];
+	unsigned char *buffer = camera->pl->serial.send_frame_buffer;
 
 	/* worst case: two maximum-sized packets (~1020 bytes, full of data
 	   that needs to be escaped */
@@ -281,7 +284,7 @@ canon_serial_send_frame (Camera *camera, const unsigned char *pkt, int len)
 static unsigned char *
 canon_serial_recv_frame (Camera *camera, int *len)
 {
-	static unsigned char buffer[5000];
+	unsigned char *buffer = camera->pl->serial.recv_frame_buffer;
 
 	/* more than enough :-) (allow for a few run-together packets) */
 	unsigned char *p = buffer;
@@ -628,8 +631,9 @@ static unsigned char *
 canon_serial_recv_msg (Camera *camera, unsigned char mtype, unsigned char dir, unsigned int *total,
 		       GPContext *context)
 {
-	static unsigned char *msg = NULL;
-	static int msg_size = 512;	/* initial allocation/2 */
+	unsigned char *msg = camera->pl->serial.recv_msg_buffer;
+	int msg_size = camera->pl->serial.recv_msg_buffer_size;
+
 	unsigned char *frag;
 	unsigned char type, seq;
 	int len, length = 0, msg_pos = 0;
@@ -690,6 +694,8 @@ canon_serial_recv_msg (Camera *camera, unsigned char mtype, unsigned char dir, u
 				msg = realloc (msg, msg_size);
 				if (!msg)
 					return NULL;
+				camera->pl->serial.recv_msg_buffer = msg;
+				camera->pl->serial.recv_msg_buffer_size = msg_size;
 			}
 			memcpy (msg + msg_pos, frag, len);
 			msg_pos += len;

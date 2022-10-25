@@ -88,7 +88,7 @@ struct _CameraPrivateLibrary {
 };
 
 
-static const char *models[] = {
+static const char *const models[] = {
 	"Mustek:VDC-3500",
 	"Relisys:Dimera 3500",
 	"Trust:DC-3500",
@@ -551,7 +551,6 @@ static uint8_t *
 Dimera_Get_Full_Image (int picnum, long *size, int *width, int *height,
 			Camera *camera, GPContext *context)
 {
-	static struct mesa_image_arg	ia;
 	int32_t				r;
 	uint8_t			*b, *rbuffer = NULL;
 	int				hires, s, retry;
@@ -607,14 +606,14 @@ Dimera_Get_Full_Image (int picnum, long *size, int *width, int *height,
 		return NULL;
 	}
 
-	ia.start = 28;
-	ia.send = 4;
-	ia.skip = 0;
-	ia.repeat = ( hires ? 160 : 80 );
-	ia.row_cnt = 40;
-	ia.inc1 = 1;
-	ia.inc2 = 128;
-	ia.inc3 = ia.inc4 = 0;
+	struct mesa_image_arg	ia = {
+		.start = 28,
+		.send = 4,
+		.repeat = ( hires ? 160 : 80 ),
+		.row_cnt = 40,
+		.inc1 = 1,
+		.inc2 = 128,
+	};
 
 	/* due to reports of mesa_read_image not working for some cameras */
 	/* this is changed to use mesa_read_row */
@@ -714,7 +713,7 @@ We need more, and more accurate, curves here to make this work.  You'd need
 a better way than trial and error to generate a family of characteristic
 curves.
 */
-static struct { float M; float b; }
+static const struct { float M; float b; }
 exposure_tables[] = {
 	{2.6, -11},
 	{2.8, -15},
@@ -892,7 +891,7 @@ camera_set_config (Camera *camera, CameraWidget *window, GPContext *context)
 	return GP_OK;
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_file_func = get_file_func,
 	.get_info_func = get_info_func

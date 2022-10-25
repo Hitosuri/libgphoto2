@@ -150,15 +150,15 @@ struct _PDCPicInfo {
 #define AUTO_POWEROFF _("Auto Power Off (minutes)")
 #define SHOW_CAPTIONS _("Information")
 
-static const char *quality[] = {N_("normal"), N_("fine"), N_("superfine"),
+static const char *const quality[] = {N_("normal"), N_("fine"), N_("superfine"),
 				NULL};
-static const char *flash[]   = {N_("auto"), N_("on"), N_("off"), NULL};
-static const char *onoff[]    = {N_("off"), N_("on"), NULL};
-static const char *mode[]    = {N_("play"), N_("record"), N_("menu"), NULL};
-static const char *power[]   = {N_("battery"), N_("a/c adaptor"), NULL};
+static const char *const flash[]   = {N_("auto"), N_("on"), N_("off"), NULL};
+static const char *const onoff[]    = {N_("off"), N_("on"), NULL};
+static const char *const mode[]    = {N_("play"), N_("record"), N_("menu"), NULL};
+static const char *const power[]   = {N_("battery"), N_("a/c adaptor"), NULL};
 /* no real need to translate those ... */
-static const char *speed[]   = {"9600", "19200", "38400", "57600", "115200", NULL};
-static const char *size[]    = {"VGA (640x480)", "XGA (1024x768", NULL};
+static const char *const speed[]   = {"9600", "19200", "38400", "57600", "115200", NULL};
+static const char *const size[]    = {"VGA (640x480)", "XGA (1024x768", NULL};
 
 #define CR(result) {int __r=(result);if(__r<0) return (__r);}
 #define CRF(result,d)      {int r=(result);if(r<0) {free(d);return(r);}}
@@ -173,7 +173,7 @@ static const char *size[]    = {"VGA (640x480)", "XGA (1024x768", NULL};
  * (3rd one) and the last one (checksum).
  */
 static int
-calc_checksum (unsigned char *cmd, unsigned int len)
+calc_checksum (const unsigned char *cmd, unsigned int len)
 {
 	unsigned int i;
 	unsigned char checksum;
@@ -198,7 +198,7 @@ pdc700_send (Camera *camera, unsigned char *cmd, unsigned int cmd_len)
 }
 
 static int
-pdc700_read (Camera *camera, unsigned char *cmd,
+pdc700_read (Camera *camera, const unsigned char *cmd,
 	     unsigned char *b, unsigned int *b_len,
 	     PDCStatus *status, unsigned char *sequence_number,
 	     GPContext *context)
@@ -717,7 +717,7 @@ camera_id (CameraText *id)
 	return (GP_OK);
 }
 
-static struct {
+static const struct {
 	const char *model;
 	unsigned short usb_vendor;
 	unsigned short usb_product;
@@ -758,7 +758,7 @@ camera_abilities (CameraAbilitiesList *list)
 }
 
 static void
-pdc700_expand (unsigned char *src, unsigned char *dst)
+pdc700_expand (const unsigned char *src, unsigned char *dst)
 {
 	int Y, Y2, U, V;
 	int x, y;
@@ -938,7 +938,7 @@ camera_about (Camera *camera, CameraText *about, GPContext *context)
  * We encapsulate the process of adding an entire radio control.
  */
 static void
-add_radio (CameraWidget *section, const char *blurb, const char **opt,
+add_radio (CameraWidget *section, const char *blurb, const char *const *opt,
 	   int selected)
 {
 	CameraWidget *child;
@@ -1168,7 +1168,7 @@ get_info_func (CameraFilesystem *fs, const char *folder, const char *file,
 	return (GP_OK);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_info_func = get_info_func,
 	.get_file_func = get_file_func,

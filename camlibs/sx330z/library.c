@@ -238,7 +238,7 @@ camera_exit(Camera *camera, GPContext *context)
 }
 
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_file_func = get_file_func,
 	.del_file_func = del_file_func
@@ -279,4 +279,3 @@ camera_init(Camera *camera, GPContext *context)
 	return(sx330z_init(camera, context));
 
 } /* camera init */
-

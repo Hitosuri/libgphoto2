@@ -45,14 +45,10 @@
 #define COOLSHOT_LAST_MOD "09/06/2001 02:28 EST"
 
 /* define what cameras we support */
-static char *coolshot_cameras[] = {
+static const char *const coolshot_cameras[] = {
 	"Panasonic:Coolshot KXL-600A",
 	"Panasonic:Coolshot KXL-601A",
 	""
-};
-
-struct _CameraPrivateLibrary {
-	int speed;
 };
 
 int camera_id (CameraText *id)
@@ -67,7 +63,7 @@ int camera_id (CameraText *id)
 int camera_abilities (CameraAbilitiesList *list)
 {
 	int x = 0;
-	char *ptr;
+	const char *ptr;
 	CameraAbilities a;
 
 	/* GP_DEBUG ("* camera_abilities"); */
@@ -250,7 +246,7 @@ static int camera_about (Camera *camera, CameraText *about, GPContext *context)
 	return (GP_OK);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func = file_list_func,
 	.get_file_func = get_file_func,
 	.get_info_func = get_info_func,
@@ -269,6 +265,7 @@ int camera_init (Camera *camera, GPContext *context)
 	camera->pl = malloc (sizeof (CameraPrivateLibrary));
 	if (!camera->pl)
 		return (GP_ERROR_NO_MEMORY);
+	camera->pl->packet_size = 500;
 
 	/* Set up the port and remember the requested speed */
 	CHECK (gp_port_get_settings (camera->port, &settings));

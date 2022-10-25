@@ -1805,7 +1805,7 @@ gp_filesystem_read_file (CameraFilesystem *fs, const char *folder,
  **/
 int
 gp_filesystem_set_funcs	(CameraFilesystem *fs,
-			 CameraFilesystemFuncs *funcs,
+			 const CameraFilesystemFuncs *funcs,
 			 void *data)
 {
 	C_PARAMS (fs);

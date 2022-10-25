@@ -27,11 +27,11 @@
 
 #include <gphoto2/gphoto2-version.h>
 
-const char **gp_library_version(GPVersionVerbosity verbose)
+const char *const *gp_library_version(GPVersionVerbosity verbose)
 {
 	/* we could also compute/parse the short strings from the long
 	   ones, but the current method is easier for now :-) */
-	static const char *shrt[] =
+	static const char *const shrt[] =
 		{
 			PACKAGE_VERSION,
 #ifdef GP_CAMLIB_SET_IS_NONSTANDARD
@@ -69,7 +69,7 @@ const char **gp_library_version(GPVersionVerbosity verbose)
 #endif
 			NULL
 		};
-	static const char *verb[] =
+	static const char *const verb[] =
 		{
 			PACKAGE_VERSION,
 #ifdef GP_CAMLIB_SET_IS_NONSTANDARD

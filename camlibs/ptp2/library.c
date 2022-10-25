@@ -828,7 +828,7 @@ nikon_wait_busy(PTPParams *params, int waitms, int timeout) {
 }
 
 
-static struct {
+static const struct {
 	const char *model;
 	unsigned short usb_vendor;
 	unsigned short usb_product;
@@ -2814,7 +2814,7 @@ static struct {
 	/* This is a camera ... reported by TAN JIAN QI <JQTAN1@e.ntu.edu.sg */
 	{"Samsung:EK-GC100",			0x04e8,	0x6866, 0},
 
-	
+
 	/* https://sourceforge.net/p/libmtp/bugs/1950/ */
 	{"TOPDON:TC004 Mini",			0x3474,	0x0020, 0},
 
@@ -2872,7 +2872,7 @@ static struct {
 #endif
 };
 
-static struct {
+static const struct {
 	const char *model;
 	unsigned long device_flags;
 } ptpip_models[] = {
@@ -2885,7 +2885,7 @@ static struct {
 };
 
 #include "device-flags.h"
-static struct {
+static const struct {
 	const char *vendor;
 	unsigned short usb_vendor;
 	const char *model;
@@ -2897,7 +2897,7 @@ static struct {
 #endif
 };
 
-static struct {
+static const struct {
 	uint16_t	format_code;
 	uint16_t	vendor_code;
 	const char *txt;
@@ -8209,7 +8209,7 @@ folder_list_func (CameraFilesystem *fs, const char *folder, CameraList *list,
  * that are uninteresting for us we list all
  * that are exposed by PTP anyway (and are r/o).
  */
-static unsigned short uninteresting_props [] = {
+static const unsigned short uninteresting_props [] = {
 	PTP_OPC_StorageID,
 	PTP_OPC_ObjectFormat,
 	PTP_OPC_ProtectionStatus,
@@ -8333,7 +8333,7 @@ ptp_mtp_render_metadata (
 /* To avoid roundtrips for querying prop desc if it is R/O
  * we list all that are by standard means R/O.
  */
-static unsigned short readonly_props [] = {
+static const unsigned short readonly_props [] = {
 	PTP_OPC_StorageID,
 	PTP_OPC_ObjectFormat,
 	PTP_OPC_ProtectionStatus,
@@ -8551,7 +8551,7 @@ gpfile_getfunc (PTPParams *params, void *xpriv,
 
 static uint16_t
 gpfile_putfunc (PTPParams *params, void *xpriv,
-	unsigned long sendlen, unsigned char *bytes
+	unsigned long sendlen, const unsigned char *bytes
 ) {
 	PTPCFHandlerPrivate* priv= (PTPCFHandlerPrivate*)xpriv;
 	int ret;
@@ -9467,7 +9467,7 @@ log_objectinfo(PTPParams *params, PTPObjectInfo *oi) {
 	GP_LOG_D ("  CaptureDate: 0x%08lx", (unsigned long)oi->CaptureDate);
 }
 
-static CameraFilesystemFuncs fsfuncs = {
+static const CameraFilesystemFuncs fsfuncs = {
 	.file_list_func		= file_list_func,
 	.folder_list_func	= folder_list_func,
 	.get_info_func		= get_info_func,
